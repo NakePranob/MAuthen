@@ -35,7 +35,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             <small class="text-slate-400 dark:text-slate-200 text-sm">
                 Code Verification has been sent via email to
             </small>
-            <b class="text-primary-app dark:text-primary-app-400 font-bold text-sm mb-8">pornpat.p@devforward.co.th</b>
+            <b class="text-primary-app dark:text-primary-app-400 font-bold text-sm mb-8">{{  auth.emailForCodeVerification }}</b>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
             <UFormGroup name="code">
@@ -55,7 +55,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                 <span>Didn’t you receive any Code? </span>
                 <b class="text-primary-app dark:text-primary-app-400 font-bold">Resend Code in 00 : 17</b>
             </div>
-            <button @click="auth.setPageView('SignIn')" type="button" class="font-bold mt-4 flex gap-2">
+            <button @click="auth.setPageView('signIn')" type="button" class="font-bold mt-4 flex gap-2">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> Back to Sign In
             </button>
         </div>

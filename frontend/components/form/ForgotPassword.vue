@@ -44,7 +44,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             </UButton>
         </UForm>
         <div class="mt-8 flex flex-col items-center justify-center gap-1 text-sm text-primary-app dark:text-primary-app-400">
-            <button @click="auth.setPageView('SignIn')" type="button" class="font-bold mt-4 flex gap-2">
+            <button @click="auth.setPageView('signIn')" type="button" class="font-bold mt-4 flex gap-2">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> Back to Sign In
             </button>
         </div>

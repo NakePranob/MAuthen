@@ -6,13 +6,6 @@ import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
 
-const hiddenPassword = ref(true);
-const password = ref("");
-
-function togglePasswordVisibility() {
-    hiddenPassword.value = !hiddenPassword.value;
-}
-
 const schema = z.object({
     email: z.string().email('Invalid email'),
     password: z.string().min(8, 'Must be at least 8 characters')
@@ -70,10 +63,10 @@ function goTo(page:string) {
             </UFormGroup>
             <UFormGroup name="password" class="relative">
                 <UInput placeholder="Password" size="xl" inputClass="p-4" v-model="state.password"
-                    :type="auth.hiddenPassword ? 'password' : 'text'" @input="password = $event" />
+                    :type="auth.hiddenPassword ? 'password' : 'text'" />
                 <span @click="auth.togglePasswordVisibility"
                     class="cursor-pointer text-gray-500 absolute dark:text-gray-400 z-50 top-[19px] right-4 flex justify-center items-center">
-                    <UIcon :name="hiddenPassword
+                    <UIcon :name="auth.hiddenPassword
                         ? 'i-heroicons-eye-20-solid'
                         : 'i-heroicons-eye-slash-20-solid'
                         " class="w-5 h-5" />

@@ -96,9 +96,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                     Resend Code
                 </button>
             </span>
-            <NuxtLink to="/SigIn" class="font-bold mt-4 flex gap-2 hover:gap-4 transition-all duration-300 ease-in-out">
+            <button @click="auth.setPageView('signIn')" class="font-bold mt-4 flex gap-2 hover:gap-4 transition-all duration-300 ease-in-out">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> Back to Sign In
-            </NuxtLink>
+            </button>
         </div>
     </div>
 </template>

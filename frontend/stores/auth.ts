@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { set } from 'zod';
+import CodeVerification from '~/components/form/CodeVerification.vue';
 
 export const useAuthStore = defineStore('auth', {
     state: () => {
@@ -7,6 +8,7 @@ export const useAuthStore = defineStore('auth', {
             hiddenPassword: true,
             pageView: 'signIn',
             otpEmail: '',
+            emailForCodeVerification: '',
             notiSuccess: {
                 isOpen: false,
                 url: "",
@@ -32,6 +34,9 @@ export const useAuthStore = defineStore('auth', {
         },
         setOtpEmail(email: string) {
             this.otpEmail = email;
+        },
+        setEmailForCodeVerification(email: string) {
+            this.emailForCodeVerification = email;
         }
     }  
 });
