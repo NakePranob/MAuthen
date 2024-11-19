@@ -1,54 +1,47 @@
 <script setup lang="ts">
-import { z } from 'zod'
-import type { FormSubmitEvent } from '#ui/types'
-import { useAuthStore } from '@/stores/auth'
-import type { LoginResponse } from '@/types/user'
-const auth = useAuthStore()
+import { z } from 'zod';
+import { reactive, computed, onMounted, onUnmounted } from 'vue';
+import type { FormSubmitEvent } from '#ui/types';
+import { useAuthStore } from '@/stores/auth';
+import type { LoginResponse } from '@/types/user';
+
+const auth = useAuthStore();
 
 const schema = z.object({
     otp: z.string({ message: 'OTP is required' }),
-})
+});
 
-type Schema = z.output<typeof schema>
+type Schema = z.output<typeof schema>;
 
 const state = reactive({
     otp: undefined,
-})
+});
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    // Do something with event.data
-    console.log(event.data)
-    const formData = {
-        email: auth.otpEmail,
-        otp: event.data.otp
-    }
+    console.log(event.data);
+    // const formData = {
+    //     email: auth.otpEmail,
+    //     otp: event.data.otp,
+    // };
+
     // try {
     //     const { data } = await useFetch<LoginResponse>('http://localhost:8000/verify-otp', {
     //         method: 'POST',
-    //         body: formData
+    //         body: formData,
     //     });
 
-    //     console.log("response:", data.value);
-
-    //     if (data.value?.message && 
-    //         data.value?.awsCredentials.AccessKeyId && 
-    //         data.value?.awsCredentials.SecretAccessKey && 
-    //         data.value?.awsCredentials.SessionToken
-    //     ) {
-    //         console.log("message:", data.value.message);
+    //     if (data.value?.message && data.value?.awsCredentials) {
     //         window.location.href = 'https://www.youtube.com/';
     //     } else {
     //         console.error('API response does not contain expected fields.');
     //     }
-
     // } catch (error) {
     //     console.error('Error submitting form:', error);
     // }
-    window.location.href = 'https://www.youtube.com/';
 }
 
 const countdown = reactive({
-    timeLeft: 10 * 60, // 10 นาที (600 วินาที)
+    timeLeft: 10 * 60, // 10 minutes (600 seconds)
 });
 
 const formattedCountdown = computed(() => {
@@ -60,7 +53,9 @@ const formattedCountdown = computed(() => {
 let countdownInterval: ReturnType<typeof setInterval> | null = null;
 
 onMounted(() => {
-    startCountdown();
+    if (process.client) {
+        startCountdown();
+    }
 });
 
 onUnmounted(() => {
@@ -85,6 +80,7 @@ function stopCountdown() {
     }
 }
 </script>
+
 
 <template>
 

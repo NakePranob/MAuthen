@@ -8,8 +8,4 @@
 div {
   font-family: "Noto Sans Thai", serif;
 }
-
-.dark body{
-    background: #000 !important;
-}
 </style>
