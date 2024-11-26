@@ -5,6 +5,22 @@ import { useAuthStore } from '@/stores/auth'
 // import type { User } from '@/types/user'
 
 const auth = useAuthStore()
+const protocol = ref('');
+const response_type = ref('');
+const client_id = ref('');
+const redirectUri = ref('');
+const scope = ref('');
+const states = ref('');
+const code_challenge_method = ref('S256');
+const nonce = ref('');
+const code_challenge = ref('');
+
+onMounted(() => {
+    redirectUri.value = new URLSearchParams(window.location.search).get('redirect_uri') || '';
+    states.value = new URLSearchParams(window.location.search).get('state') || '';
+    client_id.value = new URLSearchParams(window.location.search).get('client_id') || '';
+});
+
 
 const schema = z.object({
     email: z.string().email('Invalid email'),
@@ -21,43 +37,45 @@ const state = reactive({
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     console.log(event.data);
 
+    const formData = {
+        email: event.data.email,
+        password: event.data.password,
+        client_id: client_id.value,
+        redirectUri: redirectUri.value
+    }
     try {
-        const { data } = await useFetch<{message: string}>('http://localhost:8000/login', {
+        const { data } = await useFetch<{
+            id_token: string,
+            expires_in: number,
+            token_type: string,
+            state: string,
+            redirectUri: string
+        }>('http://localhost:8000/signin', {
             method: 'POST',
-            body: event.data
+            body: formData
         });
 
         console.log("response:", data.value);
-
-        if (data.value?.message) {
-            console.log("message:", data.value.message);
-
-            auth.setOtpEmail(event.data.email);
-            auth.setPageView('otp');
-        } else {
-            console.error('API response does not contain expected fields.');
-        }
+        window.location.href = `${data.value?.redirectUri}#id_token=${data.value?.id_token}&expires_in=${data.value?.expires_in}&token_type=${data.value?.token_type}&state=${data.value?.state}`;
 
     } catch (error) {
         console.error('Error submitting form:', error);
     }
 }
-
-function goTo(page:string) {
-    auth.setPageView(page);
-}
-
 </script>
 
 <template>
-    <div class="max-w-[380px] w-full flex flex-col items-center justify-center">
-        <NuxtImg src="/logo.png" class="w-40" />
-        <h1 class="text-3xl font-bold text-slate-700 dark:text-slate-100">M Authen 2.0</h1>
-        <small class="text-slate-400 dark:text-slate-200 mt-8 mb-8 text-xs">Welcome to M Authen 2.0, sign in
-            with
-            your email and password
-            as a Single Sign-On (SSO) to access your account & workflows:</small>
-        <UForm :schema="schema" :state="state" class="space-y-4 w-full" @submit="onSubmit">
+    <div class="max-w-[420px] w-full flex flex-col items-center justify-center gap-y-4">
+        <NuxtImg src="/logo.png" class="w-16" />
+        <div class="flex flex-col justify-center gap-1 mt-8 w-full">
+            <h1 class="text-3xl font-bold text-primary-app dark:text-primary-app-400">Sign In</h1>
+            <small class="text-sm">
+                Welcome to M - Authentication, sign in with your email
+                and password as a Single Sign-On (SSO) to access your
+                account & workflows:
+            </small>
+        </div>
+        <UForm :schema="schema" :state="state" class="space-y-4 w-full mt-4" @submit="onSubmit">
             <UFormGroup name="email">
                 <UInput v-model="state.email" size="xl" inputClass="p-4" placeholder="Email" />
             </UFormGroup>
@@ -72,26 +90,25 @@ function goTo(page:string) {
                         " class="w-5 h-5" />
                 </span>
             </UFormGroup>
-            <div class="flex justify-end text-sm text-slate-400 dark:text-slate-200 pb-4">
+            <div class="text-sm pb-4">
                 <span @click="auth.setPageView('forgotPassword')" to="/ForgotPassword" class="cursor-pointer -mt-1">
                     Forgot Password?
                 </span>
             </div>
-            <UButton type="submit" block size="xl" :padded="false" :ui="{font: '!text-sm'}" 
-            class="dark:text-slate-100 py-4">
+            <UButton type="submit" block size="xl" :padded="false" :ui="{ font: '!text-sm' }"
+                class="dark:text-slate-100 py-4">
                 Sign In
             </UButton>
         </UForm>
-        <p class="text-center text-slate-400 dark:text-slate-200 py-6 text-sm">
+        <p class="text-center text-sm">
             Don’t have an account?
-            <button @click="auth.setPageView('signUp')" type="button" class="text-primary-app dark:text-primary-app-400 font-bold">
+            <button @click="auth.setPageView('signUp')" type="button"
+                class="text-primary-app dark:text-primary-app-400 font-bold">
                 Sign Up
             </button>
         </p>
-        <small class="text-center text-slate-400 dark:text-slate-200 text-xs">
-            Thank you for using our service. If you have any questions or need further assistance, please do not
-            hesitate
-            to contact us.
+        <small class="mt-4">
+            Thank you for using our service. If you have any questions or need further assistance, please do not hesitate to contact us.
         </small>
     </div>
 </template>

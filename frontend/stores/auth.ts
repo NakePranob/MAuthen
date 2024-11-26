@@ -6,7 +6,7 @@ export const useAuthStore = defineStore('auth', {
     state: () => {
         return { 
             hiddenPassword: true,
-            pageView: 'signIn',
+            pageView: 'signUp',
             otpEmail: '',
             emailForCodeVerification: '',
             notiSuccess: {

@@ -83,21 +83,17 @@ function stopCountdown() {
 
 
 <template>
-
-    <div class="max-w-[380px] w-full flex flex-col items-center justify-center">
-        <NuxtImg src="/logo.png" class="w-40" />
-        <div class="flex flex-col items-center justify-center gap-1">
-            <h1 class="text-3xl font-bold text-slate-700 dark:text-slate-100">OTP Verification</h1>
-            <small class="text-slate-400 dark:text-slate-200 text-sm">
+    <div class="max-w-[380px] w-full flex flex-col items-center justify-center gap-y-4">
+        <NuxtImg src="/logo.png" class="w-20" />
+        <div class="flex flex-col justify-center gap-1 mt-8 w-full">
+            <h1 class="text-3xl font-bold text-primary-app dark:text-primary-app-400">OTP Verification</h1>
+            <small class="text-sm">
                 One-Time Password (OTP) has been sent via email to
             </small>
-            <b class="text-primary-app dark:text-primary-app-400 font-bold text-sm mb-8">{{ auth.otpEmail }}</b>
+            <b class="text-primary-app dark:text-primary-app-400 font-bold text-sm mb-2">{{ auth.otpEmail }}</b>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
-            <UFormGroup name="otp">
-                <label for="v-1" class="text-slate-400 dark:text-slate-200 text-sm">
-                    Enter the OTP below to verify it.
-                </label>
+            <UFormGroup name="otp" label="Enter the OTP below to verify it.">
                 <UInput v-model="state.otp" size="xl" placeholder="OTP" maxlength="8" inputClass="text-center py-4 text-sm mt-1" />
             </UFormGroup>
             <UFormGroup>
@@ -109,7 +105,7 @@ function stopCountdown() {
             </UFormGroup>
         </UForm>
         <div
-            class="mt-8 flex flex-col items-center justify-center gap-1 text-sm text-slate-400 dark:text-slate-200">
+            class="mt-6 flex flex-col items-center justify-center gap-1 text-sm">
             <div class="flex-1 flex flex-col items-center justify-center">
                 <span>Didn’t you receive any OTP? </span>
                 <b class="text-primary-app dark:text-primary-app-400 font-bold mt-1">Resend OTP in {{formattedCountdown}}</b>

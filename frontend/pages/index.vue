@@ -13,16 +13,16 @@ const auth = useAuthStore();
 </script>
 
 <template>
-    <div class="grid grid-cols-2">
-        <!-- <div class=" fixed top-4 left-4">
+    <div class="grid grid-cols-10">
+        <div class=" fixed top-4 left-4">
             <ColorScheme>
                 <USelect v-model="$colorMode.preference" :options="['system', 'light', 'dark']" />
             </ColorScheme>
-        </div> -->
-        <div class="col-span-1 h-screen p-5 pe-0 xl:p-20 xl:pe-0 hidden sm:block">
-            <NuxtImg src="/bg.jpg" class="w-full h-full object-cover rounded-3xl" />
         </div>
-        <div class="col-span-2 sm:col-span-1 h-screen overflow-y-auto flex flex-col sm:justify-center items-center py-8 px-4">
+        <div class="sm:col-span-5 lg:col-span-6 h-screen hidden sm:block">
+            <NuxtImg src="/bg.jpg" class="w-full h-full object-cover" />
+        </div>
+        <div class="col-span-10 sm:col-span-5 lg:col-span-4 h-screen overflow-y-auto flex flex-col justify-center items-center py-8 px-4">
             <SignIn v-if="auth.pageView == 'signIn'"/>
             <SignUp v-else-if="auth.pageView == 'signUp'"/>
             <OTP v-else-if="auth.pageView == 'otp'"/>
