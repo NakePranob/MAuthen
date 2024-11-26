@@ -1,12 +1,10 @@
 import { defineStore } from 'pinia';
-import { set } from 'zod';
-import CodeVerification from '~/components/form/CodeVerification.vue';
 
 export const useAuthStore = defineStore('auth', {
     state: () => {
         return { 
             hiddenPassword: true,
-            pageView: 'signUp',
+            pageView: 'confirmPassword',
             otpEmail: '',
             emailForCodeVerification: '',
             notiSuccess: {

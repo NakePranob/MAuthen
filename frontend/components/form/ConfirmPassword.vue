@@ -45,13 +45,13 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 <template>
     <div class="max-w-[380px] w-full flex flex-col items-center justify-center">
-        <NuxtImg src="/logo.png" class="w-40" />
-        <div class="flex flex-col items-center justify-center gap-1 mb-8">
-            <h1 class="text-3xl font-bold text-slate-700 dark:text-slate-100">Reset Your Password</h1>
-            <small class="text-slate-400 dark:text-slate-200 text-sm">
+        <NuxtImg src="/logo.png" class="w-16" />
+        <div class="flex flex-col justify-center gap-1 my-8 w-full">
+            <h1 class="text-3xl font-bold text-primary-app dark:text-primary-app-400">Reset Your Password</h1>
+            <small class="text-sm">
                 We have sent a password reset code by email
             </small>
-            <small class="text-slate-400 dark:text-slate-200 text-sm">
+            <small class="text-sm">
                 to S***@g***. Enter it below to reset your password.
             </small>
         </div>
@@ -89,8 +89,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                 </UButton>
             </div>
         </UForm>
-        <div class="mt-8 flex flex-col items-center justify-center gap-1 text-sm text-primary-app dark:text-primary-app-400">
-            <span class="text-slate-400 dark:text-slate-200 text-sm ">
+        <div class="mt-8 flex flex-col items-center justify-center gap-1 text-sm">
+            <span class="text-sm ">
                 Didn’t you receive any code? 
                 <button class="text-primary-app dark:text-primary-app-400 font-bold hover:opacity-70 transition-all duration-300 ease-in-out">
                     Resend Code

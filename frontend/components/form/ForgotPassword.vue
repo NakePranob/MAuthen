@@ -24,14 +24,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 <template>
     <div class="max-w-[380px] w-full flex flex-col items-center justify-center">
-        <NuxtImg src="/logo.png" class="w-40" />
-        <div class="flex flex-col items-center justify-center gap-1 mb-8">
-            <h1 class="text-3xl font-bold text-slate-700 dark:text-slate-100">Forgot Password</h1>
-            <small class="text-slate-400 dark:text-slate-200 text-sm">
-                Enter your Username below and
-            </small>
-            <small class="text-slate-400 dark:text-slate-200 text-sm">
-                we will send a message to reset your password
+        <NuxtImg src="/logo.png" class="w-16" />
+        <div class="flex flex-col justify-center gap-1 my-8 w-full">
+            <h1 class="text-3xl font-bold text-primary-app dark:text-primary-app-400">Forgot Password</h1>
+            <small class="text-sm">
+                Enter your Email below and we will send a message to reset your password
             </small>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
@@ -43,7 +40,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                 Verify
             </UButton>
         </UForm>
-        <div class="mt-8 flex flex-col items-center justify-center gap-1 text-sm text-primary-app dark:text-primary-app-400">
+        <div class="mt-8 flex flex-col items-center justify-center gap-1 text-sm">
             <button @click="auth.setPageView('signIn')" type="button" class="font-bold mt-4 flex gap-2">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> Back to Sign In
             </button>

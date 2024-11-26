@@ -20,7 +20,7 @@ const auth = useAuthStore();
             </ColorScheme>
         </div>
         <div class="sm:col-span-5 lg:col-span-6 h-screen hidden sm:block">
-            <NuxtImg src="/bg.jpg" class="w-full h-full object-cover" />
+            <NuxtImg src="/bg.png" class="w-full h-full object-cover" />
         </div>
         <div class="col-span-10 sm:col-span-5 lg:col-span-4 h-screen overflow-y-auto flex flex-col justify-center items-center py-8 px-4">
             <SignIn v-if="auth.pageView == 'signIn'"/>

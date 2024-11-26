@@ -3,14 +3,28 @@ import type { FormError, FormSubmitEvent } from '#ui/types'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
-
+const validatePassword = ref<{
+    path: string,
+    message?: string,
+}[]>([]);
+// validatePassword.value.splice(validatePassword.value.findIndex(error => error.path === 'password'), 1)}
 const validate = (state: any): FormError[] => {
     const errors = []
+    const errorsPassword = []
     if (!state.email) errors.push({ path: 'email', message: 'Required' })
     if (!state.email.includes('@')) errors.push({ path: 'email', message: 'Invalid email' })
-    if (!state.password) errors.push({ path: 'password', message: 'Required' })
-    if (state.password.length < 8) errors.push({ path: 'password', message: 'Must be at least 8 characters' })
-    console.log(errors);
+    if (!state.password) errorsPassword.push({ path: 'password', message: 'Required'})
+    if (!/[a-z]/.test(state.password)) errorsPassword.push({ path: 'password', message: 'Password must contain a lower case letter'})
+    if (!/[A-Z]/.test(state.password)) errorsPassword.push({ path: 'password', message: 'Password must contain an upper case letter'})
+    if (!/\d/.test(state.password)) errorsPassword.push({ path: 'password', message: 'Password must contain a number'})
+    if (state.password.length < 8) errorsPassword.push({ path: 'password', message: 'Password must contain at least 8 characters' })
+    if (!/[!@#$%^&*(),.?":{}|<>_]/.test(state.password)) errorsPassword.push({ path: 'password', message: 'Password must contain a special character or a space'})
+    if (/\s/.test(state.password)) errorsPassword.push({ path: 'password', message: 'Password must not contain a leading or trailing space'})
+
+    
+    validatePassword.value = errorsPassword;
+    console.log('errorsPassword', errorsPassword);
+    console.log(validatePassword.value)
     return errors
 }
 
@@ -43,7 +57,8 @@ async function onSubmit(event: FormSubmitEvent<any>) {
             </UFormGroup>
             <UFormGroup class="relative">
                 <UInput placeholder="Password" size="xl" inputClass="p-4" v-model="state.password"
-                    :type="auth.hiddenPassword ? 'password' : 'text'"/>
+                    :type="auth.hiddenPassword ? 'password' : 'text'"
+                    :color="validatePassword.some(error => error.path === 'password') ? 'red' : undefined"/>
                 <span @click="auth.togglePasswordVisibility"
                     class="cursor-pointer text-gray-500 absolute dark:text-gray-400 z-50 top-[19px] right-4 flex justify-center items-center">
                     <UIcon :name="auth.hiddenPassword
@@ -53,12 +68,42 @@ async function onSubmit(event: FormSubmitEvent<any>) {
                 </span>
             </UFormGroup>
             <div class="text-sm">
-                <p>✓ Password must contain a lower case letter</p>
-                <p>✓ Password must contain an upper case letter</p>
-                <p>✓ Password must contain a number</p>
-                <p>✓ Password must contain at least 8 characters</p>
-                <p>✓ Password must contain a special character or a space</p>
-                <p>✓ Password must not contain a leading or trailing space</p>
+                <p>
+                    <span :class="{'text-green-500': !validatePassword.some(error => error.message === 'Password must contain a lower case letter')}">
+                        ✓
+                    </span> 
+                    Password must contain a lower case letter
+                </p>
+                <p>
+                    <span :class="{'text-green-500': !validatePassword.some(error => error.message === 'Password must contain an upper case letter')}">
+                        ✓
+                    </span> 
+                    Password must contain an upper case letter
+                </p>
+                <p>
+                    <span :class="{'text-green-500': !validatePassword.some(error => error.message === 'Password must contain a number')}">
+                        ✓
+                    </span> 
+                    Password must contain a number
+                </p>
+                <p>
+                    <span :class="{'text-green-500': !validatePassword.some(error => error.message === 'Password must contain at least 8 characters')}">
+                        ✓
+                    </span> 
+                    Password must contain at least 8 characters
+                </p>
+                <p>
+                    <span :class="{'text-green-500': !validatePassword.some(error => error.message === 'Password must contain a special character or a space')}">
+                        ✓
+                    </span> 
+                    Password must contain a special character or a space
+                </p>
+                <p>
+                    <span :class="{'text-green-500': !validatePassword.some(error => error.message === 'Password must not contain a leading or trailing space')}">
+                        ✓
+                    </span> 
+                    Password must not contain a leading or trailing space
+                </p>
             </div>
             <UButton type="submit" block size="xl" :padded="false" :ui="{font: '!text-sm'}" 
             class="dark:text-slate-100 py-4">

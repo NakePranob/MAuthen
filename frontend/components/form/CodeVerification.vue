@@ -29,20 +29,17 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 <template>
     <div class="max-w-[380px] w-full flex flex-col items-center justify-center">
-        <NuxtImg src="/logo.png" class="w-40" />
-        <div class="flex flex-col items-center justify-center gap-1">
-            <h1 class="text-3xl font-bold text-slate-700 dark:text-slate-100">Code Verification</h1>
-            <small class="text-slate-400 dark:text-slate-200 text-sm">
+        <NuxtImg src="/logo.png" class="w-20" />
+        <div class="flex flex-col justify-center gap-1 mt-8 w-full">
+            <h1 class="text-3xl font-bold text-primary-app dark:text-primary-app-400">Code Verification</h1>
+            <small class="text-sm">
                 Code Verification has been sent via email to
             </small>
-            <b class="text-primary-app dark:text-primary-app-400 font-bold text-sm mb-8">{{  auth.emailForCodeVerification }}</b>
+            <b class="text-primary-app dark:text-primary-app-400 font-bold text-sm mb-2">{{ auth.otpEmail }}</b>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
-            <UFormGroup name="code">
-                <label for="v-1" class="text-slate-400 dark:text-slate-200 text-sm">
-                    Enter the Code below to verify it.
-                </label>
-                <UInput v-model="state.code" size="xl" inputClass="p-4 mt-1" placeholder="Code" />
+            <UFormGroup name="code" label="Enter the Code below to verify it.">
+                <UInput v-model="state.code" size="xl" inputClass="text-center py-4 text-sm mt-1" placeholder="Code"/>
             </UFormGroup>
             <UButton type="submit" block size="xl" :padded="false" :ui="{font: '!text-sm'}" 
             class="dark:text-slate-100 py-4">
@@ -50,7 +47,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             </UButton>
         </UForm>
         <div
-            class="mt-8 flex flex-col items-center justify-center gap-1 text-sm text-slate-400 dark:text-slate-200">
+            class="mt-8 flex flex-col items-center justify-center gap-1 text-sm">
             <div class="flex-1 flex flex-col items-center justify-center">
                 <span>Didn’t you receive any Code? </span>
                 <b class="text-primary-app dark:text-primary-app-400 font-bold">Resend Code in 00 : 17</b>
