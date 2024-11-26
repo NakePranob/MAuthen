@@ -25,6 +25,54 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         description: 'Your email was confirmed and you are now logged in.',
     });
 }
+
+const countdown = reactive({
+    timeLeft: 10 * 60, // 10 minutes (600 seconds)
+    isFinished: false, // เพิ่ม state เพื่อตรวจสอบว่าการนับสิ้นสุดหรือไม่
+});
+
+const formattedCountdown = computed(() => {
+    const minutes = Math.floor(countdown.timeLeft / 60);
+    const seconds = countdown.timeLeft % 60;
+    return `${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
+});
+
+let countdownInterval: ReturnType<typeof setInterval> | null = null;
+
+onMounted(() => {
+    if (process.client) {
+        startCountdown();
+    }
+});
+
+onUnmounted(() => {
+    stopCountdown();
+});
+
+function resetCountdown() {
+    countdown.timeLeft = 10 * 60; // รีเซ็ตเวลาเป็น 10 นาที
+    countdown.isFinished = false; // รีเซ็ตสถานะการนับ
+    startCountdown(); // เริ่มนับใหม่
+}
+
+function startCountdown() {
+    if (countdownInterval) return;
+    countdownInterval = setInterval(() => {
+        if (countdown.timeLeft > 0) {
+            countdown.timeLeft -= 1;
+        } else {
+            countdown.isFinished = true; // ตั้งค่าเป็น true เมื่อเวลาสิ้นสุด
+            stopCountdown();
+        }
+    }, 1000);
+}
+
+function stopCountdown() {
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
+}
 </script>
 
 <template>
@@ -50,7 +98,17 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             class="mt-8 flex flex-col items-center justify-center gap-1 text-sm">
             <div class="flex-1 flex flex-col items-center justify-center">
                 <span>Didn’t you receive any Code? </span>
-                <b class="text-primary-app dark:text-primary-app-400 font-bold">Resend Code in 00 : 17</b>
+                <template v-if="!countdown.isFinished">
+                    <b class="text-primary-app dark:text-primary-app-400 font-bold mt-1">
+                        Resend OTP in {{ formattedCountdown }}
+                    </b>
+                </template>
+                <template v-else>
+                    <b @click="resetCountdown" class="text-primary-app hover:scale-105 cursor-pointer 
+                    transition-all duration-150 ease-in-out dark:text-primary-app-400 font-bold mt-1">
+                        Resend OTP
+                    </b>
+                </template>
             </div>
             <button @click="auth.setPageView('signIn')" type="button" class="font-bold mt-4 flex gap-2">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> Back to Sign In
