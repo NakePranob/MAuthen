@@ -5,19 +5,16 @@ import { useAuthStore } from '@/stores/auth'
 // import type { User } from '@/types/user'
 
 const auth = useAuthStore()
-const protocol = ref('');
-const response_type = ref('');
+const accessToken = useCookie('accessToken')
 const client_id = ref('');
 const redirectUri = ref('');
-const scope = ref('');
-const states = ref('');
+
 const code_challenge_method = ref('S256');
 const nonce = ref('');
 const code_challenge = ref('');
 
 onMounted(() => {
     redirectUri.value = new URLSearchParams(window.location.search).get('redirect_uri') || '';
-    states.value = new URLSearchParams(window.location.search).get('state') || '';
     client_id.value = new URLSearchParams(window.location.search).get('client_id') || '';
 });
 
@@ -36,27 +33,38 @@ const state = reactive({
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     console.log(event.data);
-
     const formData = {
-        email: event.data.email,
+        username: event.data.email,
         password: event.data.password,
         client_id: client_id.value,
-        redirectUri: redirectUri.value
+        // redirect_uri: redirectUri.value,
     }
     try {
-        const { data } = await useFetch<{
-            id_token: string,
-            expires_in: number,
-            token_type: string,
-            state: string,
-            redirectUri: string
-        }>('http://localhost:8000/signin', {
+        const {data, error} = await useFetch<{
+            id_token: string;
+            expires_in: number;
+            token_type: string;
+            state: string;
+        }>('http://localhost:3002/api/v1/auth/login', {
             method: 'POST',
-            body: formData
+            body: formData,
+            credentials: 'include',
         });
 
+        if (error.value) {
+            throw new Error(error.value.message);
+        }
+
         console.log("response:", data.value);
-        window.location.href = `${data.value?.redirectUri}#id_token=${data.value?.id_token}&expires_in=${data.value?.expires_in}&token_type=${data.value?.token_type}&state=${data.value?.state}`;
+
+        // if (data.value) {
+        //     const location = data.value.redirect || data.value.location;
+        //     if (location) {
+        //         window.location.href = location;
+        //     }
+        // }
+        // console.log(redirectUri.value)
+        window.location.href = `${redirectUri.value}#id_token=${data.value?.id_token}&expires_in=${data.value?.expires_in}&token_type=${data.value?.token_type}&state=${data.value?.state}`;
 
     } catch (error) {
         console.error('Error submitting form:', error);

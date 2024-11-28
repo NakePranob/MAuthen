@@ -7,9 +7,10 @@
 
 <script lang="ts" setup>
     function redirectToAuthServer() {
-        const redirectUri = encodeURIComponent('http://localhost:3001/callback'); // URL ของเว็บลูกค้า
+        const redirectUri = encodeURIComponent('http://localhost:3001/mauthen-login'); // URL ของเว็บลูกค้า
         const state = 'random_state_value'; // ใช้สำหรับป้องกัน CSRF
-        window.location.href = `http://localhost:3000/?redirect_uri=${redirectUri}&state=${state}`;
+        const client_id = '37av3n51eo6u8cbfqlgs74aomj';
+        window.location.href = `http://localhost:3002/api/v1/auth/authorize?response_type=token&client_id=${client_id}&redirect_uri=${redirectUri}&state=${state}$scope=email%20openid%20phone%20profile`;
     }
 </script>
 

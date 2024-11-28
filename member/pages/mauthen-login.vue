@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>Welcome to Callback Site</h1>
+        <h1>Welcome to mauthen-login</h1>
     </div>
 </template>
 
