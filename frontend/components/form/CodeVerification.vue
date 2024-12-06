@@ -4,6 +4,7 @@ import type { FormSubmitEvent } from '#ui/types'
 import { useAuthStore } from '@/stores/auth';
 
 const auth = useAuthStore();
+const formElement = ref();
 
 const schema = z.object({
     code: z.string({ message: 'Required' }),
@@ -40,10 +41,19 @@ const formattedCountdown = computed(() => {
 let countdownInterval: ReturnType<typeof setInterval> | null = null;
 
 onMounted(() => {
+    getElementHeight();
     if (process.client) {
         startCountdown();
     }
 });
+
+const getElementHeight = () => {
+    if (formElement.value) {
+        const height = formElement.value.offsetHeight;
+        console.log('Height of the element:', height);
+        auth.setFormElementHight(height);
+    }
+};
 
 onUnmounted(() => {
     stopCountdown();
@@ -76,26 +86,26 @@ function stopCountdown() {
 </script>
 
 <template>
-    <div class="max-w-[380px] w-full flex flex-col items-center justify-center">
+    <div class="max-w-[420px] w-full flex flex-col items-center justify-center">
         <NuxtImg src="/logo.png" class="w-20" />
         <div class="flex flex-col justify-center gap-1 mt-8 w-full">
-            <h1 class="text-3xl font-bold text-primary-app dark:text-primary-app-400">Code Verification</h1>
-            <small class="text-sm">
+            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">Code Verification</h1>
+            <p class="text-base">
                 Code Verification has been sent via email to
-            </small>
-            <b class="text-primary-app dark:text-primary-app-400 font-bold text-sm mb-2">{{ auth.otpEmail }}</b>
+            </p>
+            <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-2">{{ auth.otpEmail }}</b>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
             <UFormGroup name="code" label="Enter the Code below to verify it.">
-                <UInput v-model="state.code" size="xl" inputClass="text-center py-4 text-sm mt-1" placeholder="Code"/>
+                <UInput v-model="state.code" size="xl" inputClass="text-center py-4 text-base mt-1" placeholder="Code"/>
             </UFormGroup>
-            <UButton type="submit" block size="xl" :padded="false" :ui="{font: '!text-sm'}" 
+            <UButton type="submit" block size="xl" :padded="false" :ui="{font: '!text-base'}" 
             class="dark:text-slate-100 py-4">
                 Verify
             </UButton>
         </UForm>
         <div
-            class="mt-8 flex flex-col items-center justify-center gap-1 text-sm">
+            class="mt-8 flex flex-col items-center justify-center gap-1 text-base">
             <div class="flex-1 flex flex-col items-center justify-center">
                 <span>Didn’t you receive any Code? </span>
                 <template v-if="!countdown.isFinished">
@@ -110,9 +120,9 @@ function stopCountdown() {
                     </b>
                 </template>
             </div>
-            <button @click="auth.setPageView('signIn')" type="button" class="font-bold mt-4 flex gap-2">
+            <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`" class="font-bold mt-6 flex gap-2 items-center">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> Back to Sign In
-            </button>
+            </NuxtLink>
         </div>
     </div>
 </template>

@@ -1,23 +1,29 @@
 <script setup lang="ts">
 import { z } from 'zod';
-import type { FormSubmitEvent } from '#ui/types'
-import { useAuthStore } from '@/stores/auth'
+import type { FormSubmitEvent } from '#ui/types';
+import { useAuthStore } from '@/stores/auth';
 // import type { User } from '@/types/user'
 
-const auth = useAuthStore()
-const accessToken = useCookie('accessToken')
+const toast = useToast();
+const auth = useAuthStore();
 const client_id = ref('');
 const redirectUri = ref('');
-
-const code_challenge_method = ref('S256');
-const nonce = ref('');
-const code_challenge = ref('');
+const formElement = ref();
+const xsrfToken = useCookie('XSRF-TOKEN');
 
 onMounted(() => {
     redirectUri.value = new URLSearchParams(window.location.search).get('redirect_uri') || '';
     client_id.value = new URLSearchParams(window.location.search).get('client_id') || '';
+    getElementHeight();
+    console.log('userCookie', xsrfToken.value);
 });
 
+const getElementHeight = () => {
+    const element = formElement.value
+    const height = element.clientHeight // หรือใช้ offsetHeight ขึ้นอยู่กับความต้องการ
+
+    auth.setFormElementHight(height);
+}
 
 const schema = z.object({
     email: z.string().email('Invalid email'),
@@ -29,59 +35,63 @@ type Schema = z.output<typeof schema>
 const state = reactive({
     email: undefined,
     password: undefined
-})
+});
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    console.log(event.data);
-    const formData = {
-        username: event.data.email,
-        password: event.data.password,
-        client_id: client_id.value,
-        // redirect_uri: redirectUri.value,
-    }
+
+    const form = document.createElement('form');
+    form.method = 'POST'; // ส่งข้อมูลแบบ POST
+    form.action = `http://localhost:3002/api/v1/auth/login${auth.uri}`; // URL ของ Backend
+    form.style.display = 'none'; // ซ่อนฟอร์มเพื่อไม่ให้ผู้ใช้เห็น
+
+    // เพิ่มข้อมูล email
+    const emailInput = document.createElement('input');
+    emailInput.type = 'hidden';
+    emailInput.name = 'username';
+    emailInput.value = event.data.email;
+    form.appendChild(emailInput);
+
+    // เพิ่มข้อมูล password
+    const passwordInput = document.createElement('input');
+    passwordInput.type = 'hidden';
+    passwordInput.name = 'password';
+    passwordInput.value = event.data.password;
+    form.appendChild(passwordInput);
+
+    // เพิ่มข้อมูล _csrf
+    const _csrfInput = document.createElement('input');
+    _csrfInput.type = 'hidden';
+    _csrfInput.name = '_csrf';
+    _csrfInput.value = xsrfToken.value || '';
+    form.appendChild(_csrfInput);
+
+
     try {
-        const {data, error} = await useFetch<{
-            id_token: string;
-            expires_in: number;
-            token_type: string;
-            state: string;
-        }>('http://localhost:3002/api/v1/auth/login', {
-            method: 'POST',
-            body: formData,
-            credentials: 'include',
-        });
+        document.body.appendChild(form);
+        form.submit();
 
-        if (error.value) {
-            throw new Error(error.value.message);
-        }
-
-        console.log("response:", data.value);
-
-        // if (data.value) {
-        //     const location = data.value.redirect || data.value.location;
-        //     if (location) {
-        //         window.location.href = location;
-        //     }
-        // }
-        // console.log(redirectUri.value)
-        window.location.href = `${redirectUri.value}#id_token=${data.value?.id_token}&expires_in=${data.value?.expires_in}&token_type=${data.value?.token_type}&state=${data.value?.state}`;
-
+        // console.log(event.data);
+        // auth.setOtpEmail(event.data.email);
+        // auth.setPageView('otp');
     } catch (error) {
-        console.error('Error submitting form:', error);
+        // console.error('Error submitting form:', error);
+        toast.add({ title: 'Incorrect email or password.' })
     }
 }
+
+
 </script>
 
 <template>
-    <div class="max-w-[420px] w-full flex flex-col items-center justify-center gap-y-4">
-        <NuxtImg src="/logo.png" class="w-16" />
+    <div ref="formElement" class="max-w-[420px] w-full flex flex-col items-center justify-center gap-y-4">
+        <NuxtImg src="/logo.png" class="w-[60px]" />
         <div class="flex flex-col justify-center gap-1 mt-8 w-full">
-            <h1 class="text-3xl font-bold text-primary-app dark:text-primary-app-400">Sign In</h1>
-            <small class="text-sm">
+            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">Sign In</h1>
+            <p class="text-base">
                 Welcome to M - Authentication, sign in with your email
                 and password as a Single Sign-On (SSO) to access your
                 account & workflows:
-            </small>
+            </p>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-4 w-full mt-4" @submit="onSubmit">
             <UFormGroup name="email">
@@ -98,25 +108,26 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                         " class="w-5 h-5" />
                 </span>
             </UFormGroup>
-            <div class="text-sm pb-4">
-                <span @click="auth.setPageView('forgotPassword')" to="/ForgotPassword" class="cursor-pointer -mt-1">
+            <div class="text-base pb-4">
+                <NuxtLink @click="auth.setPageView('')" :to="`/forgotpassword${auth.uri}`" class="cursor-pointer -mt-1">
                     Forgot Password?
-                </span>
+                </NuxtLink @click="auth.setPageView('')">
             </div>
-            <UButton type="submit" block size="xl" :padded="false" :ui="{ font: '!text-sm' }"
+            <UButton type="submit" block size="xl" :padded="false" :ui="{ font: '!text-base' }"
                 class="dark:text-slate-100 py-4">
                 Sign In
             </UButton>
         </UForm>
-        <p class="text-center text-sm">
+        <p class="text-center text-base">
             Don’t have an account?
-            <button @click="auth.setPageView('signUp')" type="button"
+            <NuxtLink @click="auth.setPageView('')" :to="`/register${auth.uri}`"
                 class="text-primary-app dark:text-primary-app-400 font-bold">
                 Sign Up
-            </button>
+            </NuxtLink @click="auth.setPageView('')">
         </p>
-        <small class="mt-4">
-            Thank you for using our service. If you have any questions or need further assistance, please do not hesitate to contact us.
-        </small>
+        <p class="mt-4">
+            Thank you for using our service. If you have any questions or need further assistance, please do not
+            hesitate to contact us.
+        </p>
     </div>
 </template>

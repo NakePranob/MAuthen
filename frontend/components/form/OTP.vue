@@ -6,9 +6,12 @@ import { useAuthStore } from '@/stores/auth';
 import type { LoginResponse } from '@/types/user';
 
 const auth = useAuthStore();
+const formElement = ref<HTMLFormElement | null>(null);
+const client_id = ref('');
+const redirectUri = ref('');
 
 const schema = z.object({
-    otp: z.string({ message: 'OTP is required' }),
+    otp: z.string({ message: 'OTP is required' }).min(8, 'OTP must be at least 8 characters'),
 });
 
 type Schema = z.output<typeof schema>;
@@ -20,24 +23,32 @@ const state = reactive({
 async function onSubmit(event: FormSubmitEvent<Schema>) {
     console.log(event.data);
     // const formData = {
-    //     email: auth.otpEmail,
+    //     username: auth.otpEmail,
     //     otp: event.data.otp,
+    //     client_id: client_id.value,
+    //     refresh_token: auth.refreshToken,
     // };
 
+    // console.log('formData', formData);
+
     // try {
-    //     const { data } = await useFetch<LoginResponse>('http://localhost:8000/verify-otp', {
+    //     const { data } = await useFetch<any>('http://localhost:3002/api/v1/auth/loginverify', {
     //         method: 'POST',
     //         body: formData,
+    //         credentials: 'include',
     //     });
 
-    //     if (data.value?.message && data.value?.awsCredentials) {
-    //         window.location.href = 'https://www.youtube.com/';
-    //     } else {
-    //         console.error('API response does not contain expected fields.');
-    //     }
+    //     console.log('data', data.value)
+
+    //     // if (data.value?.message && data.value?.awsCredentials) {
+    //     //     window.location.href = 'https://www.youtube.com/';
+    //     // } else {
+    //     //     console.error('API response does not contain expected fields.');
+    //     // }
     // } catch (error) {
     //     console.error('Error submitting form:', error);
     // }
+    window.location.href = 'https://www.youtube.com/';
 }
 
 const countdown = reactive({
@@ -54,10 +65,23 @@ const formattedCountdown = computed(() => {
 let countdownInterval: ReturnType<typeof setInterval> | null = null;
 
 onMounted(() => {
+    redirectUri.value = new URLSearchParams(window.location.search).get('redirect_uri') || '';
+    client_id.value = new URLSearchParams(window.location.search).get('client_id') || '';
     if (process.client) {
-        startCountdown();
+        nextTick(() => {
+            startCountdown();
+            getElementHeight();
+        });
     }
 });
+
+const getElementHeight = () => {
+    if (formElement.value) {
+        const height = formElement.value.offsetHeight;
+        console.log('Height of the element:', height);
+        auth.setFormElementHight(height);
+    }
+};
 
 onUnmounted(() => {
     stopCountdown();
@@ -91,29 +115,29 @@ function stopCountdown() {
 
 
 <template>
-    <div class="max-w-[380px] w-full flex flex-col items-center justify-center gap-y-4">
+    <div class="max-w-[420px] w-full flex flex-col items-center justify-center gap-y-4">
         <NuxtImg src="/logo.png" class="w-20" />
         <div class="flex flex-col justify-center gap-1 mt-8 w-full">
-            <h1 class="text-3xl font-bold text-primary-app dark:text-primary-app-400">OTP Verification</h1>
-            <small class="text-sm">
+            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">OTP Verification</h1>
+            <p class="text-base">
                 One-Time Password (OTP) has been sent via email to
-            </small>
-            <b class="text-primary-app dark:text-primary-app-400 font-bold text-sm mb-2">{{ auth.otpEmail }}</b>
+            </p>
+            <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-2">{{ auth.otpEmail }}</b>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
-            <UFormGroup name="otp" label="Enter the OTP below to verify it.">
-                <UInput v-model="state.otp" size="xl" placeholder="OTP" maxlength="8"
-                    inputClass="text-center py-4 text-sm mt-1" />
+            <UFormGroup name="otp" label="Enter the OTP (Ref code: csUkC0) below to verify it.">
+                <UInput v-model="state.otp" size="xl" placeholder="Code" maxlength="8"
+                    inputClass="text-center py-4 text-base mt-1" />
             </UFormGroup>
             <UFormGroup>
                 <UButton type="submit" block size="xl" :padded="false" :ui="{
-                    font: '!text-sm',
+                    font: '!text-base',
                 }" class="dark:text-slate-100 py-4">
                     Verify
                 </UButton>
             </UFormGroup>
         </UForm>
-        <div class="mt-6 flex flex-col items-center justify-center gap-1 text-sm">
+        <div class="mt-6 flex flex-col items-center justify-center gap-1 text-base">
             <div class="flex-1 flex flex-col items-center justify-center">
                 <span>Didn’t you receive any OTP? </span>
                 <template v-if="!countdown.isFinished">
@@ -128,9 +152,9 @@ function stopCountdown() {
                     </b>
                 </template>
             </div>
-            <button @click="auth.setPageView('signIn')" type="button" class="font-bold mt-4 flex gap-2">
+            <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`" class="font-bold mt-6 flex gap-2 items-center">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> Back to Sign In
-            </button>
+            </NuxtLink>
         </div>
     </div>
 </template>

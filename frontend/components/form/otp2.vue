@@ -1,12 +1,12 @@
 <template>
     <div class="flex flex-col items-center justify-center gap-y-4">
-        <NuxtImg src="/logo.png" class="w-16" />
+        <NuxtImg src="/logo.png" class="w-[60px]" />
         <div class="flex flex-col justify-center gap-1 mt-8 w-full">
-            <h1 class="text-3xl font-bold text-primary-app dark:text-primary-app-400">OTP Verification</h1>
-            <small class="text-sm">
+            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">OTP Verification</h1>
+            <p class="text-base">
                 One-Time Password (OTP) has been sent via email to
-            </small>
-            <b class="text-primary-app dark:text-primary-app-400 font-bold text-sm mb-2">{{ auth.otpEmail }}</b>
+            </p>
+            <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-2">{{ auth.otpEmail }}</b>
         </div>
         <UForm :validate="validate" :state="state" class="space-y-8 w-full" @submit="onSubmit">
             <UFormGroup name="otp" label="Enter the OTP below to verify it.">
@@ -16,7 +16,7 @@
                         :key="index"
                         type="text"
                         maxlength="1"
-                        class="w-11 h-11 text-center border border-gray-300 focus:ring-primary-app focus:border-primary-app text-sm 
+                        class="w-11 h-11 text-center border border-gray-300 focus:ring-primary-app focus:border-primary-app text-base 
                         focus:outline focus:outline-2 focus:outline-primary-app rounded-md"
                         v-model="state.otp[index]"
                         @input="handleInput(index)"
@@ -27,21 +27,21 @@
             </UFormGroup>
             <UFormGroup>
                 <UButton type="submit" block size="xl" :padded="false" :ui="{
-                font: '!text-sm',
+                font: '!text-base',
                 }" class="dark:text-slate-100 py-4">
                     Verify
                 </UButton>
             </UFormGroup>
         </UForm>
         <div
-            class="mt-6 flex flex-col items-center justify-center gap-1 text-sm">
+            class="mt-6 flex flex-col items-center justify-center gap-1 text-base">
             <div class="flex-1 flex flex-col items-center justify-center">
                 <span>Didn’t you receive any OTP? </span>
                 <b class="text-primary-app dark:text-primary-app-400 font-bold mt-1">Resend OTP in {{formattedCountdown}}</b>
             </div>
-            <button @click="auth.setPageView('signIn')" type="button" class="font-bold mt-4 flex gap-2">
+            <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`" class="font-bold mt-6 flex gap-2 items-center">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> Back to Sign In
-            </button>
+            </NuxtLink>
         </div>
     </div>
 </template>
@@ -52,6 +52,7 @@ import type { FormError, FormSubmitEvent } from '#ui/types';
 import { useAuthStore } from '@/stores/auth';
 
 const auth = useAuthStore();
+const formElement = ref();
 
 const state = reactive({
     otp: new Array(8).fill(''),
@@ -98,10 +99,19 @@ const formattedCountdown = computed(() => {
 let countdownInterval: ReturnType<typeof setInterval> | null = null;
 
 onMounted(() => {
+    getElementHeight();
     if (process.client) {
         startCountdown();
     }
 });
+
+const getElementHeight = () => {
+    if (formElement.value) {
+        const height = formElement.value.offsetHeight;
+        console.log('Height of the element:', height);
+        auth.setFormElementHight(height);
+    }
+};
 
 onUnmounted(() => {
     stopCountdown();

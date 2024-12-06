@@ -12829,7 +12829,7 @@ var createModule = function() {
         err("failed to compile wasm module: " + str);
         if (str.includes("imported Memory") || str.includes("memory import")) {
           err(
-            "Memory size incompatibility issues may be due to changing INITIAL_MEMORY at runtime to something too large. Use ALLOW_MEMORY_GROWTH to allow any size memory (and also make sure not to set INITIAL_MEMORY at runtime to something smaller than it was at compile time)."
+            "Memory size incompatibility issues may be due to changing INITIAL_MEMORY at runtime to something too large. Use ALLOW_MEMORY_GROWTH to allow any size memory (and also make sure not to set INITIAL_MEMORY at runtime to something per than it was at compile time)."
           );
         }
         throw e;
