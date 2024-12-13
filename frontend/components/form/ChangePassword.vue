@@ -3,6 +3,10 @@ import type { FormError, FormSubmitEvent } from '#ui/types'
 import { useAuthStore } from '@/stores/auth'
 const auth = useAuthStore();
 const formElement = ref();
+const toast = useToast();
+const errorMsg = useCookie('cognito-fl');
+const session = ref();
+const email = ref();
 
 const validatePassword = ref<{
     path: string,
@@ -12,7 +16,6 @@ const validatePassword = ref<{
 const validate = (state: any): FormError[] => {
     const errors = []
     const errorsPassword = []
-    if (!state.code) errors.push({ path: 'code', message: 'code-policy-required' })
     if (!/[a-z]/.test(state.password) && auth.passwordPolicy.RequireLowercase) errorsPassword.push({ path: 'password', message: 'Password must contain a lower case letter'})
     if (!/[A-Z]/.test(state.password) && auth.passwordPolicy.RequireUppercase) errorsPassword.push({ path: 'password', message: 'Password must contain an upper case letter'})
     if (!/\d/.test(state.password) && auth.passwordPolicy.RequireNumbers) errorsPassword.push({ path: 'password', message: 'Password must contain a number'})
@@ -31,7 +34,6 @@ const validate = (state: any): FormError[] => {
 }
 
 const state = reactive({
-    code: undefined,
     password: undefined,
     c_password: undefined,
 })
@@ -42,27 +44,62 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     }
 
     console.log(event.data)
-    auth.setPageView("");
+    console.log("session", session.value)
+    console.log("email", email.value)
 
+    const formData = {
+        session: session.value,
+        username: email.value,
+        password: event.data.password,
+    }
+
+    const {data, error} = await useFetch<{redirectUrl: string}>(`http://localhost:3002/api/v1/auth/newPassword${auth.uri}`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+    });
+
+    if (error.value) {
+        console.error("Error message from server:", error || "Unknown error occurred");
+        toast.add({ title: error.value?.data.message });
+        return;
+    }
+    
+    if (data.value?.redirectUrl === undefined) return 
+
+    auth.setPageView("");
     auth.setNotiSuccess({
         isOpen: true,
-        state: 'error',
-        url: `http://localhost:3000/forgotpassword${auth.uri}`,
-        message: 'noti-error-password-change-title',
-        description: 'noti-error-password-change-description',
+        state: 'success',
+        url: data.value?.redirectUrl,
+        message: 'noti-success-password-change-title',
+        description: 'noti-success-password-change-description',
     });
-    
-    // auth.setNotiSuccess({
-    //     isOpen: true,
-    //     state: 'success',
-    //     url: 'https://www.youtube.com/',
-    //     message: 'noti-success-password-change-title',
-    //     description: 'noti-success-password-change-description',
-    // });
 }
+
+const decodedBase64 = (token: string) => {
+    // ตรวจสอบและเพิ่ม padding หากจำเป็น
+    const paddedEncodedToken = token.padEnd(token.length + (4 - (token.length % 4)) % 4, '=');
+
+    // ถอดรหัส Base64
+    const decodedToken = atob(paddedEncodedToken);
+
+    // แปลงข้อมูลจาก String เป็น JSON
+    const decodedJson = JSON.parse(decodedToken);
+
+    return decodedJson;
+};
 
 onMounted(() => {
     getElementHeight();
+    if (errorMsg.value && !errorMsg.value.startsWith('W10')) {
+        const err = decodedBase64(errorMsg.value);
+        toast.add({ title: err.map.loginErrorMessage });
+        errorMsg.value = btoa('[]');
+        session.value = err.map.Session;
+        email.value = err.map.ChallengeParameters.email;
+        console.log(err);
+    }
 });
 
 const getElementHeight = () => {
@@ -79,19 +116,12 @@ const getElementHeight = () => {
     <div class="max-w-[420px] w-full flex flex-col items-center justify-center">
         <NuxtImg src="/logo.png" class="w-[60px]" />
         <div class="flex flex-col justify-center gap-1 my-8 w-full">
-            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('confirm-password-title') }}</h1>
+            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('change-password-title') }}</h1>
             <p class="text-base">
-                {{ $t('confirm-password-description-leading') }} 
-                <b class="text-primary-app dark:text-primary-app-400 font-bold">
-                    {{ auth.emailForgotPassword }}
-                </b> 
-                {{ $t('confirm-password-description-trailing') }}
+                {{ $t('change-password-description') }}
             </p>
         </div>
         <UForm :validate="validate" :state="state" class="space-y-2 w-full" @submit="onSubmit">
-            <TFormGroup name="code">
-                <UInput v-model="state.code" size="xl" inputClass="p-4" :placeholder="$t('confirm-password-placeholder')" />
-            </TFormGroup>
             <TFormGroup name="password" class="relative">
                 <UInput :placeholder="$t('password')" size="xl" inputClass="p-4" v-model="state.password"
                     :type="auth.hiddenPassword ? 'password' : 'text'" 
@@ -192,13 +222,6 @@ const getElementHeight = () => {
             </div>
         </UForm>
         <div class="mt-8 flex flex-col items-center justify-center gap-1 text-base">
-            <span class="text-base ">
-                {{ $t('did-not-receive', { value: 'Code' }) }}
-                <button
-                    class="text-primary-app dark:text-primary-app-400 font-bold hover:opacity-70 transition-all duration-300 ease-in-out">
-                    {{ $t('resend-code') }}
-                </button>
-            </span>
             <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`"
                 class="font-bold mt-6 flex gap-2 hover:gap-4 transition-all duration-300 ease-in-out">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> {{ $t('back-to-sign-in') }}

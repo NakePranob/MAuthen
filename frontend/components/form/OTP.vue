@@ -11,7 +11,7 @@ const client_id = ref('');
 const redirectUri = ref('');
 
 const schema = z.object({
-    otp: z.string({ message: 'OTP is required' }).min(8, 'OTP must be at least 8 characters'),
+    otp: z.string({ message: 'otp-policy-required' }).min(8, 'otp-policy-length'),
 });
 
 type Schema = z.output<typeof schema>;
@@ -117,44 +117,50 @@ function stopCountdown() {
 <template>
     <div class="max-w-[420px] w-full flex flex-col items-center justify-center gap-y-4">
         <NuxtImg src="/logo.png" class="w-20" />
-        <div class="flex flex-col justify-center gap-1 mt-8 w-full">
-            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">OTP Verification</h1>
+        <div class="flex flex-col justify-center gap-1 mt-6 w-full">
+            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('otp-verification-title') }}</h1>
             <p class="text-base">
-                One-Time Password (OTP) has been sent via email to
+                {{ $t('otp-verification-description') }}
             </p>
             <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-2">{{ auth.otpEmail }}</b>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
-            <UFormGroup name="otp" label="Enter the OTP (Ref code: csUkC0) below to verify it.">
-                <UInput v-model="state.otp" size="xl" placeholder="Code" maxlength="8"
+            <TFormGroup name="otp">
+                <label>
+                    {{ $t('otp-verification-label-leading') }} 
+                    <b>{{ $t('otp-verification-label-center') }}</b> 
+                    {{ $t('otp-verification-label-trailing') }}
+                </label>
+                <UInput v-model="state.otp" size="xl" :placeholder="$t('otp-verification-placeholder')" maxlength="8"
                     inputClass="text-center py-4 text-base mt-1" />
-            </UFormGroup>
-            <UFormGroup>
+            </TFormGroup>
+            <TFormGroup>
                 <UButton type="submit" block size="xl" :padded="false" :ui="{
                     font: '!text-base',
                 }" class="dark:text-slate-100 py-4">
                     Verify
                 </UButton>
-            </UFormGroup>
+            </TFormGroup>
         </UForm>
         <div class="mt-6 flex flex-col items-center justify-center gap-1 text-base">
             <div class="flex-1 flex flex-col items-center justify-center">
-                <span>Didn’t you receive any OTP? </span>
+                <span>{{ $t('did-not-receive', {value: 'OTP'}) }}</span>
                 <template v-if="!countdown.isFinished">
                     <b class="text-primary-app dark:text-primary-app-400 font-bold mt-1">
-                        Resend OTP in {{ formattedCountdown }}
+                        {{ $t('resend-otp-in') }} {{ formattedCountdown }}
                     </b>
                 </template>
                 <template v-else>
                     <b @click="resetCountdown" class="text-primary-app hover:scale-105 cursor-pointer 
                     transition-all duration-150 ease-in-out dark:text-primary-app-400 font-bold mt-1">
-                        Resend OTP
+                    {{ $t('resend-otp') }}
                     </b>
                 </template>
             </div>
-            <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`" class="font-bold mt-6 flex gap-2 items-center">
-                <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> Back to Sign In
-            </NuxtLink>
+            <span @click="auth.setPageView('')" class="font-bold mt-6 flex gap-2 items-center cursor-pointer
+            transition-all duration-150 ease-in-out hover:gap-4">
+                <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> {{ $t('back-to-sign-in') }}
+            </span>
         </div>
     </div>
 </template>

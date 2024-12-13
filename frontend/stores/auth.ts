@@ -14,6 +14,7 @@ export const useAuthStore = defineStore('auth', {
             emailForgotPassword: '',
             notiSuccess: {
                 isOpen: false,
+                state: "",
                 url: "",
                 message: "",
                 description: ""
@@ -43,6 +44,7 @@ export const useAuthStore = defineStore('auth', {
         },
         setNotiSuccess(obj: {
             isOpen: boolean,
+            state: string,
             url: string,
             message: string,
             description: string

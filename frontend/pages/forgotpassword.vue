@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useAuthStore } from '@/stores/auth'
-import FormForgotPassword from '@/components/form/ForgotPassword.vue';
-import FormSuccess from '@/components/form/FormSuccess.vue';
+import ForgotPassword from '@/components/form/ForgotPassword.vue';
+import FormNoti from '@/components/form/FormNoti.vue';
 import ConfirmPassword from '@/components/form/ConfirmPassword.vue';
 import { useRoute } from 'vue-router';
 
@@ -46,7 +46,7 @@ onMounted(async () => {
                 RequireSymbols: data.value.message.RequireSymbols,
                 RequireNumbers: data.value.message.RequireNumbers,
             });
-            let height = 36;
+            let height = 18 * 3;
             if (data.value.message.RequireUppercase) height += 18;
             if (data.value.message.RequireLowercase) height += 18;
             if (data.value.message.RequireSymbols) height += 18;
@@ -64,8 +64,8 @@ onMounted(async () => {
         Required String parameter 'client_id' is not present
     </div>
     <div v-else class="max-w-[420px] w-full">
-        <FormForgotPassword v-if="auth.pageView != 'confirmPassword' && !auth.notiSuccess.isOpen" />
+        <ForgotPassword v-if="auth.pageView != 'confirmPassword' && !auth.notiSuccess.isOpen" />
         <ConfirmPassword v-else-if="auth.pageView == 'confirmPassword'" />
-        <FormSuccess v-else-if="auth.notiSuccess.isOpen" />
+        <FormNoti v-else-if="auth.notiSuccess.isOpen" />
     </div>
 </template>

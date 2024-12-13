@@ -1,20 +1,66 @@
 <template>
-    <div class="h-full dark:bg-zinc-950">
+    <div class="h-full dark:bg-[#141418] text-[#231F20] dark:text-slate-50">
         <div class="grid grid-cols-10">
-            <!-- Select Theme -->
-            <div class="fixed top-4 left-4">
-                <ColorScheme>
-                    <USelect v-model="$colorMode.preference" :options="['system', 'light', 'dark']" />
-                </ColorScheme>
+            <div class="fixed top-4 items-center right-4 flex gap-2">
+                <!-- Theme -->
+                <!-- <button class="flex justify-center items-center me-2">
+                    <template v-if="$colorMode.value === 'dark'">
+                        <UTooltip :text="$t('switch-to-ligth')" :open-delay="300">
+                            <UIcon name="i-heroicons-moon-solid"  class="rounded-full sm:w-8 sm:h-8 h-8 w-8"
+                                @click.stop="() => {
+                                    $colorMode.preference = 'light'
+                                }" 
+                            />
+                        </UTooltip>
+                    </template>
+                    <template v-else-if="$colorMode.value === 'light'">
+                        <UTooltip :text="$t('switch-to-system')" :open-delay="300">
+                            <UIcon name="i-heroicons-sun-solid" class="rounded-full sm:w-8 sm:h-8 h-8 w-8"
+                                @click.stop="() => {
+                                    $colorMode.preference = 'system'
+                                }" 
+                            />
+                        </UTooltip>
+                    </template>
+                    <template v-else>
+                        <UTooltip :text="$t('switch-to-dark')" :open-delay="300">
+                            <UIcon name="i-heroicons-computer-desktop-solid" class="rounded-full sm:w-8 sm:h-8 h-8 w-8"
+                                @click.stop="() => {
+                                    $colorMode.preference = 'dark'
+                                }" 
+                            />
+                        </UTooltip>
+                    </template>
+                </button> -->
+                <!-- Language -->
+                <button class="flex justify-center items-center">
+                    <template v-if="getLocaleCookie() === 'en'">
+                        <UTooltip text="เปลี่ยนเป็นภาษาไทย" :open-delay="300">
+                            <NuxtImg class="rounded-full sm:w-8 sm:h-8 h-8 w-8" src="/flag-th.jpg"
+                                @click.stop="setLocale('th')" />
+                        </UTooltip>
+                    </template>
+                    <template v-else>
+                        <UTooltip text="Switch to English" :open-delay="300">
+                            <NuxtImg class="rounded-full sm:w-8 sm:h-8 h-8 w-8" src="/flag-en.png"
+                                @click.stop="setLocale('en')" />
+                        </UTooltip>
+                    </template>
+                </button>
             </div>
             <!-- Left Section: Background Image -->
-            <div class="hidden sm:block sm:col-span-5 lg:col-span-6 h-screen">
-                <NuxtImg src="/bg.png" class="w-full h-full object-cover" alt="Background Image" />
+            <div class="hidden lg:block lg:col-span-6 h-screen relative">
+                <NuxtImg src="/logoBaner.png" class="absolute object-fill left-1/2 top-8 -translate-x-1/2 h-96"
+                    alt="logoBaner" />
+                <NuxtImg src="/baner.png" class=" absolute top-16 h-[61.111px] left-1/2 -translate-x-1/2" alt="baner" />
+                <NuxtImg src="/city.png" class="absolute bottom-20 left-0 w-full" alt="city" />
+                <NuxtImg src="/member.png" class="absolute object-fill bottom-8 left-1/2 -translate-x-1/2 h-[316.5px]"
+                    alt="member" />
+                <NuxtImg src="/bg.jpg" class="w-full h-full object-cover" alt="Background Image" />
             </div>
             <!-- Right Section: Slot Content -->
-            <div
-                :class="auth.formElementHight < bodyHeight ? 'justify-center' : 'justify-start py-8'"
-                class="col-span-10 sm:col-span-5 lg:col-span-4 h-screen overflow-y-auto flex flex-col items-center px-4">
+            <div :class="auth.formElementHight > bodyHeight ? 'justify-start py-8' : 'justify-center'"
+                class="col-span-10 lg:col-span-4 h-screen overflow-y-auto flex flex-col items-center px-4">
                 <slot />
             </div>
         </div>
@@ -24,10 +70,25 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth';
+const { locale, setLocale, getLocaleCookie } = useI18n();
 const auth = useAuthStore();
 const bodyHeight = ref();
 
-onMounted(()=>{
+const language = [{
+    name: 'English',
+    value: 'en'
+}, {
+    name: 'Thailand',
+    value: 'th',
+}]
+
+const lang = ref(locale.value as 'en' | 'th')
+
+watch(lang, (newlang, Oldlang) => {
+    setLocale(newlang)
+})
+
+onMounted(() => {
     bodyHeight.value = document.body.clientHeight
 });
 </script>

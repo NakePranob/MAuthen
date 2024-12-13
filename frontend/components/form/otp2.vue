@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col items-center justify-center gap-y-4">
         <NuxtImg src="/logo.png" class="w-[60px]" />
-        <div class="flex flex-col justify-center gap-1 mt-8 w-full">
+        <div class="flex flex-col justify-center gap-1 mt-6 w-full">
             <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">OTP Verification</h1>
             <p class="text-base">
                 One-Time Password (OTP) has been sent via email to
@@ -9,7 +9,7 @@
             <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-2">{{ auth.otpEmail }}</b>
         </div>
         <UForm :validate="validate" :state="state" class="space-y-8 w-full" @submit="onSubmit">
-            <UFormGroup name="otp" label="Enter the OTP below to verify it.">
+            <TFormGroup name="otp" label="Enter the OTP below to verify it.">
                 <div class="flex justify-center gap-2 mt-2">
                     <input
                         v-for="(value, index) in state.otp"
@@ -24,14 +24,14 @@
                         ref="otpRefs"
                     />
                 </div>
-            </UFormGroup>
-            <UFormGroup>
+            </TFormGroup>
+            <TFormGroup>
                 <UButton type="submit" block size="xl" :padded="false" :ui="{
                 font: '!text-base',
                 }" class="dark:text-slate-100 py-4">
                     Verify
                 </UButton>
-            </UFormGroup>
+            </TFormGroup>
         </UForm>
         <div
             class="mt-6 flex flex-col items-center justify-center gap-1 text-base">
@@ -40,7 +40,7 @@
                 <b class="text-primary-app dark:text-primary-app-400 font-bold mt-1">Resend OTP in {{formattedCountdown}}</b>
             </div>
             <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`" class="font-bold mt-6 flex gap-2 items-center">
-                <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> Back to Sign In
+                <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> {{ $t('back-to-sign-in') }}
             </NuxtLink>
         </div>
     </div>

@@ -2,7 +2,7 @@
 import SignIn from '@/components/form/SignIn.vue';
 import { useAuthStore } from '@/stores/auth'
 import OTP from '@/components/form/OTP.vue';
-import FormSuccess from '@/components/form/FormSuccess.vue';
+import FormNoti from '@/components/form/FormNoti.vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
@@ -28,6 +28,6 @@ onMounted(() => {
     <div v-else class="max-w-[420px] w-full">
         <SignIn v-if="auth.pageView != 'otp' && !auth.notiSuccess.isOpen" />
         <OTP v-else-if="auth.pageView == 'otp'" />
-        <FormSuccess v-else-if="auth.notiSuccess.isOpen" />
+        <FormNoti v-else-if="auth.notiSuccess.isOpen" />
     </div>
 </template>

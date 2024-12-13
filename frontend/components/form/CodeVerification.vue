@@ -5,9 +5,10 @@ import { useAuthStore } from '@/stores/auth';
 
 const auth = useAuthStore();
 const formElement = ref();
+const email = ref('');
 
 const schema = z.object({
-    code: z.string({ message: 'Required' }),
+    code: z.string({ message: 'code-policy-required' }),
 })
 
 type Schema = z.output<typeof schema>
@@ -21,9 +22,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     auth.setPageView("");
     auth.setNotiSuccess({
         isOpen: true,
+        state: 'success',
         url: 'https://www.youtube.com/',
-        message: 'Sign Up Successfully',
-        description: 'Your email was confirmed and you are now logged in.',
+        message: 'noti-success-sign-up-title',
+        description: 'noti-success-sign-up-description',
     });
 }
 
@@ -44,6 +46,7 @@ onMounted(() => {
     getElementHeight();
     if (process.client) {
         startCountdown();
+        email.value = obfuscateEmail(auth.emailForCodeVerification);
     }
 });
 
@@ -58,6 +61,13 @@ const getElementHeight = () => {
 onUnmounted(() => {
     stopCountdown();
 });
+
+function obfuscateEmail(email: string) {
+    const [localPart, domainPart] = email.split("@");
+    const maskedLocal = localPart[0];
+    const maskedDomain = domainPart[0];
+    return `${maskedLocal}@${maskedDomain}`;
+}
 
 function resetCountdown() {
     countdown.timeLeft = 10 * 60; // รีเซ็ตเวลาเป็น 10 นาที
@@ -88,40 +98,40 @@ function stopCountdown() {
 <template>
     <div class="max-w-[420px] w-full flex flex-col items-center justify-center">
         <NuxtImg src="/logo.png" class="w-20" />
-        <div class="flex flex-col justify-center gap-1 mt-8 w-full">
-            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">Code Verification</h1>
+        <div class="flex flex-col justify-center gap-1 mt-6 w-full">
+            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('code-verification-title') }}</h1>
             <p class="text-base">
-                Code Verification has been sent via email to
+                {{ $t('code-verification-description') }}
             </p>
-            <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-2">{{ auth.otpEmail }}</b>
+            <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-6">{{ auth.emailForCodeVerification }}</b>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
-            <UFormGroup name="code" label="Enter the Code below to verify it.">
-                <UInput v-model="state.code" size="xl" inputClass="text-center py-4 text-base mt-1" placeholder="Code"/>
-            </UFormGroup>
+            <TFormGroup name="code" :label="$t('code-verification-label')">
+                <UInput v-model="state.code" size="xl" inputClass="text-center py-4 text-base mt-1" :placeholder="$t('code-verification-placeholder')"/>
+            </TFormGroup>
             <UButton type="submit" block size="xl" :padded="false" :ui="{font: '!text-base'}" 
             class="dark:text-slate-100 py-4">
-                Verify
+                {{ $t('verify-button') }}
             </UButton>
         </UForm>
         <div
             class="mt-8 flex flex-col items-center justify-center gap-1 text-base">
             <div class="flex-1 flex flex-col items-center justify-center">
-                <span>Didn’t you receive any Code? </span>
+                <span>{{ $t('did-not-receive', {value: 'Code'}) }}</span>
                 <template v-if="!countdown.isFinished">
                     <b class="text-primary-app dark:text-primary-app-400 font-bold mt-1">
-                        Resend OTP in {{ formattedCountdown }}
+                        {{ $t('resend-otp-in') }} {{ formattedCountdown }}
                     </b>
                 </template>
                 <template v-else>
                     <b @click="resetCountdown" class="text-primary-app hover:scale-105 cursor-pointer 
                     transition-all duration-150 ease-in-out dark:text-primary-app-400 font-bold mt-1">
-                        Resend OTP
+                        {{ $t('resend-otp') }}
                     </b>
                 </template>
             </div>
             <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`" class="font-bold mt-6 flex gap-2 items-center">
-                <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> Back to Sign In
+                <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> {{ $t('back-to-sign-in') }}
             </NuxtLink>
         </div>
     </div>

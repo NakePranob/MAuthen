@@ -2,7 +2,33 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
-  modules: ['@nuxt/ui', '@nuxt/image', '@nuxt/fonts', '@pinia/nuxt', '@nuxt/eslint'],
+  ssr: false,
+  modules: [
+    '@nuxt/ui',
+    '@nuxt/image',
+    '@nuxt/fonts',
+    '@pinia/nuxt',
+    '@nuxt/eslint',
+    '@nuxtjs/i18n'
+  ],
+  i18n: {
+    strategy: "prefix",
+    vueI18n: "~/i18n/i18n.config.ts",
+    defaultLocale: "en",
+    lazy: true,
+    locales: [
+        {
+            code: "en",
+            language: "en-US",
+            file: "en.json",
+        },
+        {
+            code: "th",
+            language: "th-TH",
+            file: "th.json",
+        },
+    ],
+},
   tailwindcss: {
     config: {
       theme: {

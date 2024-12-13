@@ -9,13 +9,33 @@ const auth = useAuthStore();
 const client_id = ref('');
 const redirectUri = ref('');
 const formElement = ref();
-const xsrfToken = useCookie('XSRF-TOKEN');
+const xsrfToken = useCookie('XSRFTOKEN');
+const errorMsg = useCookie('cognito-fl');
+
+const decodedBase64 = (token: string) => {
+    // ตรวจสอบและเพิ่ม padding หากจำเป็น
+    const paddedEncodedToken = token.padEnd(token.length + (4 - (token.length % 4)) % 4, '=');
+
+    // ถอดรหัส Base64
+    const decodedToken = atob(paddedEncodedToken);
+
+    // แปลงข้อมูลจาก String เป็น JSON
+    const decodedJson = JSON.parse(decodedToken);
+    console.log(decodedJson);
+
+    return decodedJson;
+};
 
 onMounted(() => {
     redirectUri.value = new URLSearchParams(window.location.search).get('redirect_uri') || '';
     client_id.value = new URLSearchParams(window.location.search).get('client_id') || '';
     getElementHeight();
-    console.log('userCookie', xsrfToken.value);
+    if (errorMsg.value && errorMsg.value !== 'W10=') {
+        const err = decodedBase64(errorMsg.value);
+        toast.add({ title: err.map.loginErrorMessage });
+        errorMsg.value = btoa('[]');
+        console.log(err);
+    }
 });
 
 const getElementHeight = () => {
@@ -26,8 +46,8 @@ const getElementHeight = () => {
 }
 
 const schema = z.object({
-    email: z.string().email('Invalid email'),
-    password: z.string().min(8, 'Must be at least 8 characters')
+    email: z.string().email('email-policy-invalid'),
+    password: z.string().min(1, 'password-policy-required')
 })
 
 type Schema = z.output<typeof schema>
@@ -37,68 +57,49 @@ const state = reactive({
     password: undefined
 });
 
-async function onSubmit(event: FormSubmitEvent<Schema>) {
+const createHiddenInput = (name: string, value: string): HTMLInputElement => {
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = name;
+  input.value = value;
+  return input;
+};
 
+const onSubmit = async (event: FormSubmitEvent<Schema>) => {
+  try {
     const form = document.createElement('form');
-    form.method = 'POST'; // ส่งข้อมูลแบบ POST
-    form.action = `http://localhost:3002/api/v1/auth/login${auth.uri}`; // URL ของ Backend
-    form.style.display = 'none'; // ซ่อนฟอร์มเพื่อไม่ให้ผู้ใช้เห็น
+    form.method = 'POST';
+    form.action = `http://localhost:3002/api/v1/auth/login${auth.uri}`;
+    form.style.display = 'none';
 
-    // เพิ่มข้อมูล email
-    const emailInput = document.createElement('input');
-    emailInput.type = 'hidden';
-    emailInput.name = 'username';
-    emailInput.value = event.data.email;
-    form.appendChild(emailInput);
+    form.appendChild(createHiddenInput('username', event.data.email));
+    form.appendChild(createHiddenInput('password', event.data.password));
+    form.appendChild(createHiddenInput('_csrf', xsrfToken.value || ''));
 
-    // เพิ่มข้อมูล password
-    const passwordInput = document.createElement('input');
-    passwordInput.type = 'hidden';
-    passwordInput.name = 'password';
-    passwordInput.value = event.data.password;
-    form.appendChild(passwordInput);
-
-    // เพิ่มข้อมูล _csrf
-    const _csrfInput = document.createElement('input');
-    _csrfInput.type = 'hidden';
-    _csrfInput.name = '_csrf';
-    _csrfInput.value = xsrfToken.value || '';
-    form.appendChild(_csrfInput);
-
-
-    try {
-        document.body.appendChild(form);
-        form.submit();
-
-        // console.log(event.data);
-        // auth.setOtpEmail(event.data.email);
-        // auth.setPageView('otp');
-    } catch (error) {
-        // console.error('Error submitting form:', error);
-        toast.add({ title: 'Incorrect email or password.' })
-    }
-}
-
+    document.body.appendChild(form);
+    form.submit();
+  } catch (error) {
+    console.error('Error submitting form:', error);
+  }
+};
 
 </script>
 
 <template>
     <div ref="formElement" class="max-w-[420px] w-full flex flex-col items-center justify-center gap-y-4">
         <NuxtImg src="/logo.png" class="w-[60px]" />
-        <div class="flex flex-col justify-center gap-1 mt-8 w-full">
-            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">Sign In</h1>
+        <div class="flex flex-col justify-center gap-1 mt-6 w-full">
+            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('sign-in-title') }}</h1>
             <p class="text-base">
-                Welcome to M - Authentication, sign in with your email
-                and password as a Single Sign-On (SSO) to access your
-                account & workflows:
+                {{ $t('sign-in-description') }}
             </p>
         </div>
-        <UForm :schema="schema" :state="state" class="space-y-4 w-full mt-4" @submit="onSubmit">
-            <UFormGroup name="email">
-                <UInput v-model="state.email" size="xl" inputClass="p-4" placeholder="Email" />
-            </UFormGroup>
-            <UFormGroup name="password" class="relative">
-                <UInput placeholder="Password" size="xl" inputClass="p-4" v-model="state.password"
+        <UForm :schema="schema" :state="state" class="space-y-2 w-full mt-4" @submit="onSubmit">
+            <TFormGroup name="email">
+                <UInput v-model="state.email" size="xl" inputClass="p-4" :placeholder="$t('email')" />
+            </TFormGroup>
+            <TFormGroup name="password" class="relative">
+                <UInput v-model="state.password" size="xl" inputClass="p-4" :placeholder="$t('password')"
                     :type="auth.hiddenPassword ? 'password' : 'text'" />
                 <span @click="auth.togglePasswordVisibility"
                     class="cursor-pointer text-gray-500 absolute dark:text-gray-400 z-50 top-[19px] right-4 flex justify-center items-center">
@@ -107,27 +108,26 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                         : 'i-heroicons-eye-slash-20-solid'
                         " class="w-5 h-5" />
                 </span>
-            </UFormGroup>
-            <div class="text-base pb-4">
+            </TFormGroup>
+            <div class="text-base pb-6">
                 <NuxtLink @click="auth.setPageView('')" :to="`/forgotpassword${auth.uri}`" class="cursor-pointer -mt-1">
-                    Forgot Password?
+                    {{ $t('forgot-password') }}
                 </NuxtLink @click="auth.setPageView('')">
             </div>
             <UButton type="submit" block size="xl" :padded="false" :ui="{ font: '!text-base' }"
                 class="dark:text-slate-100 py-4">
-                Sign In
+                {{ $t('sign-in-title') }}
             </UButton>
         </UForm>
         <p class="text-center text-base">
-            Don’t have an account?
+            {{ $t('dont-have-account') }}
             <NuxtLink @click="auth.setPageView('')" :to="`/register${auth.uri}`"
                 class="text-primary-app dark:text-primary-app-400 font-bold">
-                Sign Up
+                {{  $t('sign-in-sign-up-link') }}
             </NuxtLink @click="auth.setPageView('')">
         </p>
         <p class="mt-4">
-            Thank you for using our service. If you have any questions or need further assistance, please do not
-            hesitate to contact us.
+            {{ $t('thank-you-for-using') }}
         </p>
     </div>
 </template>
