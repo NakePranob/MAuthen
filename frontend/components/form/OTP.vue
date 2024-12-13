@@ -3,12 +3,20 @@ import { z } from 'zod';
 import { reactive, computed, onMounted, onUnmounted } from 'vue';
 import type { FormSubmitEvent } from '#ui/types';
 import { useAuthStore } from '@/stores/auth';
-import type { LoginResponse } from '@/types/user';
 
 const auth = useAuthStore();
 const formElement = ref<HTMLFormElement | null>(null);
 const client_id = ref('');
 const redirectUri = ref('');
+const email = ref('');
+
+function maskEmail(email: string) {
+  const [localPart, domain] = email.split("@");
+  const maskedLocalPart = localPart[0] + "*".repeat(localPart.length - 1);
+  const domainParts = domain.split(".");
+  const maskedDomain = domainParts[0][0] + "*".repeat(domainParts[0].length - 1) + ".";
+  return `${maskedLocalPart}@${maskedDomain}`;
+}
 
 const schema = z.object({
     otp: z.string({ message: 'otp-policy-required' }).min(8, 'otp-policy-length'),
@@ -73,6 +81,9 @@ onMounted(() => {
             getElementHeight();
         });
     }
+    // email.value = maskEmail(auth.otpEmail);
+    email.value = maskEmail("salkdad@sdaks.com");
+
 });
 
 const getElementHeight = () => {
@@ -117,12 +128,12 @@ function stopCountdown() {
 <template>
     <div class="max-w-[420px] w-full flex flex-col items-center justify-center gap-y-4">
         <NuxtImg src="/logo.png" class="w-20" />
-        <div class="flex flex-col justify-center gap-1 mt-6 w-full">
+        <div class="flex flex-col justify-center gap-2 mt-6 w-full">
             <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('otp-verification-title') }}</h1>
             <p class="text-base">
                 {{ $t('otp-verification-description') }}
             </p>
-            <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-2">{{ auth.otpEmail }}</b>
+            <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-2">{{ email }}</b>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
             <TFormGroup name="otp">
@@ -142,17 +153,17 @@ function stopCountdown() {
                 </UButton>
             </TFormGroup>
         </UForm>
-        <div class="mt-6 flex flex-col items-center justify-center gap-1 text-base">
-            <div class="flex-1 flex flex-col items-center justify-center">
+        <div class="mt-4 flex flex-col items-center justify-center text-base">
+            <div class="flex-1 flex flex-col items-center justify-center gap-2">
                 <span>{{ $t('did-not-receive', {value: 'OTP'}) }}</span>
                 <template v-if="!countdown.isFinished">
-                    <b class="text-primary-app dark:text-primary-app-400 font-bold mt-1">
+                    <b class="text-primary-app dark:text-primary-app-400 font-bold">
                         {{ $t('resend-otp-in') }} {{ formattedCountdown }}
                     </b>
                 </template>
                 <template v-else>
                     <b @click="resetCountdown" class="text-primary-app hover:scale-105 cursor-pointer 
-                    transition-all duration-150 ease-in-out dark:text-primary-app-400 font-bold mt-1">
+                    transition-all duration-150 ease-in-out dark:text-primary-app-400 font-bold">
                     {{ $t('resend-otp') }}
                     </b>
                 </template>

@@ -3,11 +3,20 @@ import type { FormError, FormSubmitEvent } from '#ui/types'
 import { useAuthStore } from '@/stores/auth'
 const auth = useAuthStore();
 const formElement = ref();
+const email = ref();
 
 const validatePassword = ref<{
     path: string,
     message?: string,
 }[]>([]);
+
+function maskEmail(email: string) {
+  const [localPart, domain] = email.split("@");
+  const maskedLocalPart = localPart[0] + "*".repeat(localPart.length - 1);
+  const domainParts = domain.split(".");
+  const maskedDomain = domainParts[0][0] + "*".repeat(domainParts[0].length - 1) + ".";
+  return `${maskedLocalPart}@${maskedDomain}`;
+}
 
 const validate = (state: any): FormError[] => {
     const errors = []
@@ -44,24 +53,25 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     console.log(event.data)
     auth.setPageView("");
 
-    auth.setNotiSuccess({
-        isOpen: true,
-        state: 'error',
-        url: `http://localhost:3000/forgotpassword${auth.uri}`,
-        message: 'noti-error-password-change-title',
-        description: 'noti-error-password-change-description',
-    });
-    
     // auth.setNotiSuccess({
     //     isOpen: true,
-    //     state: 'success',
-    //     url: 'https://www.youtube.com/',
-    //     message: 'noti-success-password-change-title',
-    //     description: 'noti-success-password-change-description',
+    //     state: 'error',
+    //     url: `http://localhost:3000/forgotpassword${auth.uri}`,
+    //     message: 'noti-error-password-change-title',
+    //     description: 'noti-error-password-change-description',
     // });
+    
+    auth.setNotiSuccess({
+        isOpen: true,
+        state: 'success',
+        url: 'https://www.youtube.com/',
+        message: 'noti-success-password-change-title',
+        description: 'noti-success-password-change-description',
+    });
 }
 
 onMounted(() => {
+    email.value = maskEmail(auth.emailForgotPassword);
     getElementHeight();
 });
 
@@ -83,12 +93,12 @@ const getElementHeight = () => {
             <p class="text-base">
                 {{ $t('confirm-password-description-leading') }} 
                 <b class="text-primary-app dark:text-primary-app-400 font-bold">
-                    {{ auth.emailForgotPassword }}
+                    {{ email }}
                 </b> 
                 {{ $t('confirm-password-description-trailing') }}
             </p>
         </div>
-        <UForm :validate="validate" :state="state" class="space-y-2 w-full" @submit="onSubmit">
+        <UForm :validate="validate" :state="state" class="space-y-4 w-full" @submit="onSubmit">
             <TFormGroup name="code">
                 <UInput v-model="state.code" size="xl" inputClass="p-4" :placeholder="$t('confirm-password-placeholder')" />
             </TFormGroup>
@@ -116,8 +126,12 @@ const getElementHeight = () => {
                         " class="w-5 h-5" />
                 </span>
             </TFormGroup>
-            <div class="text-xs flex flex-col justify-center transition-all duration-300 ease-in-out py-2"
-            :class="state.password || state.c_password ? `h-[${auth.passwordPolicyHeight.toString()}px]` : 'h-0 opacity-0 overflow-hidden'">
+            <div class="text-xs flex flex-col justify-center transition-all duration-700 ease-in-out overflow-hidden"
+                :style="{
+                    maxHeight: state.password || state.c_password ? `${auth.passwordPolicyHeight}px` : '0',
+                    opacity: state.password || state.c_password ? '1' : '0',
+                    marginBottom: state.password || state.c_password ? '32px' : '0',
+                }">
                 <div v-if="auth.passwordPolicy.RequireLowercase" class="flex items-center gap-1">
                     <p :class="validatePassword.some(error => error.message === 'Password must contain a lower case letter') ? 'text-red-500' : 'text-green-500'">
                         <UIcon :name="validatePassword.some(error => error.message === 'Password must contain a lower case letter')

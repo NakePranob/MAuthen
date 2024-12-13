@@ -84,13 +84,13 @@ async function onSubmit(event: FormSubmitEvent<any>) {
 <template>
     <div class="max-w-[420px] w-full flex flex-col items-center justify-center gap-y-4">
         <NuxtImg src="/logo.png" class="w-[60px]" />
-        <div class="flex flex-col justify-center gap-1 mt-6 w-full">
+        <div class="flex flex-col justify-center gap-2 mt-6 w-full">
             <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('sign-up-title') }}</h1>
             <p class="text-base">
                 {{ $t('sign-up-description') }}
             </p>
         </div>
-        <UForm :validate="validate" :state="state" class="space-y-2 w-full mt-6" @submit="onSubmit">
+        <UForm :validate="validate" :state="state" class="space-y-4 w-full mt-4" @submit="onSubmit">
             <TFormGroup name="email">
                 <UInput v-model="state.email" size="xl" inputClass="p-4" :placeholder="$t('email')" />
             </TFormGroup>
@@ -106,8 +106,12 @@ async function onSubmit(event: FormSubmitEvent<any>) {
                         " class="w-5 h-5" />
                 </p>
             </TFormGroup>
-            <div class="text-xs flex flex-col justify-center transition-all duration-700 ease-in-out"
-                :class="state.password ? `h-[${auth.passwordPolicyHeight.toString()}px]` : 'h-0 opacity-0 overflow-hidden'">
+            <div class="text-xs transition-all duration-300 ease-in-out overflow-hidden"
+                :style="{
+                    maxHeight: state.password ? `${auth.passwordPolicyHeight}px` : '0',
+                    opacity: state.password ? '1' : '0',
+                    marginBottom: state.password ? '32px' : '0',
+                }">
                 <div v-if="auth.passwordPolicy.RequireLowercase" class="flex items-center gap-1">
                     <p :class="validatePassword.some(error => error.message === 'Password must contain a lower case letter') ? 'text-red-500' : 'text-green-500'">
                         <UIcon :name="validatePassword.some(error => error.message === 'Password must contain a lower case letter')
@@ -168,7 +172,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
                 {{ $t('sign-up-title') }}
             </UButton>
         </UForm>
-        <div class="mt-8 w-full flex justify-center">
+        <div class="mt-4 w-full flex justify-center">
             <p class="text-base">
                 {{ $t('already-have-account') }} 
                 <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`"

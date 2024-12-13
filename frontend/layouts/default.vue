@@ -52,7 +52,7 @@
             <div class="hidden lg:block lg:col-span-6 h-screen relative">
                 <NuxtImg src="/logoBaner.png" class="absolute object-fill left-1/2 top-8 -translate-x-1/2 h-96"
                     alt="logoBaner" />
-                <NuxtImg src="/baner.png" class=" absolute top-16 h-[61.111px] left-1/2 -translate-x-1/2" alt="baner" />
+                <NuxtImg src="/baner.png" class=" absolute top-16 h-[72px] left-1/2 -translate-x-1/2" alt="baner" />
                 <NuxtImg src="/city.png" class="absolute bottom-20 left-0 w-full" alt="city" />
                 <NuxtImg src="/member.png" class="absolute object-fill bottom-8 left-1/2 -translate-x-1/2 h-[316.5px]"
                     alt="member" />

@@ -46,7 +46,7 @@ const getElementHeight = () => {
 }
 
 const schema = z.object({
-    email: z.string().email('email-policy-invalid'),
+    email: z.string({ message: "email-policy-required" }).email('email-policy-invalid'),
     password: z.string().min(1, 'password-policy-required')
 })
 
@@ -88,13 +88,13 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
 <template>
     <div ref="formElement" class="max-w-[420px] w-full flex flex-col items-center justify-center gap-y-4">
         <NuxtImg src="/logo.png" class="w-[60px]" />
-        <div class="flex flex-col justify-center gap-1 mt-6 w-full">
+        <div class="flex flex-col justify-center gap-2 mt-6 w-full">
             <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('sign-in-title') }}</h1>
             <p class="text-base">
                 {{ $t('sign-in-description') }}
             </p>
         </div>
-        <UForm :schema="schema" :state="state" class="space-y-2 w-full mt-4" @submit="onSubmit">
+        <UForm :schema="schema" :state="state" class="space-y-4 w-full mt-4" @submit="onSubmit">
             <TFormGroup name="email">
                 <UInput v-model="state.email" size="xl" inputClass="p-4" :placeholder="$t('email')" />
             </TFormGroup>
@@ -110,7 +110,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
                 </span>
             </TFormGroup>
             <div class="text-base pb-6">
-                <NuxtLink @click="auth.setPageView('')" :to="`/forgotpassword${auth.uri}`" class="cursor-pointer -mt-1">
+                <NuxtLink @click="auth.setPageView('')" :to="`/forgotpassword${auth.uri}`" class="cursor-pointer">
                     {{ $t('forgot-password') }}
                 </NuxtLink @click="auth.setPageView('')">
             </div>

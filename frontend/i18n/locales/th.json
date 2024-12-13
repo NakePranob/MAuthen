@@ -63,7 +63,7 @@
     "password-policy-not-space-leading-trailing": "รหัสผ่านไม่ควรมีช่องว่างหน้าและหลัง",
     "password-policy-not-match": "รหัสผ่านและรหัสผ่านยืนยันตรงกัน",
 
-    "noti-redirecting-in": "กำลังเปลี่ยนเส้นทางใน",
+    "noti-redirecting-in": "กำลังกลับสู่หน้าหลัก",
     "noti-success-button": "ข้าม",
     "noti-error-button": "ลองอีกครั้ง",
     "noti-success-sign-up-title": "สมัครสมาชิกสำเร็จ",

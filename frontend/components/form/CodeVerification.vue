@@ -7,6 +7,14 @@ const auth = useAuthStore();
 const formElement = ref();
 const email = ref('');
 
+function maskEmail(email: string) {
+  const [localPart, domain] = email.split("@");
+  const maskedLocalPart = localPart[0] + "*".repeat(localPart.length - 1);
+  const domainParts = domain.split(".");
+  const maskedDomain = domainParts[0][0] + "*".repeat(domainParts[0].length - 1) + ".";
+  return `${maskedLocalPart}@${maskedDomain}`;
+}
+
 const schema = z.object({
     code: z.string({ message: 'code-policy-required' }),
 })
@@ -23,7 +31,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     auth.setNotiSuccess({
         isOpen: true,
         state: 'success',
-        url: 'https://www.youtube.com/',
+        url: `http://http://localhost:3000${auth.uri}`,
         message: 'noti-success-sign-up-title',
         description: 'noti-success-sign-up-description',
     });
@@ -46,7 +54,7 @@ onMounted(() => {
     getElementHeight();
     if (process.client) {
         startCountdown();
-        email.value = obfuscateEmail(auth.emailForCodeVerification);
+        email.value = maskEmail(auth.emailForCodeVerification);
     }
 });
 
@@ -61,13 +69,6 @@ const getElementHeight = () => {
 onUnmounted(() => {
     stopCountdown();
 });
-
-function obfuscateEmail(email: string) {
-    const [localPart, domainPart] = email.split("@");
-    const maskedLocal = localPart[0];
-    const maskedDomain = domainPart[0];
-    return `${maskedLocal}@${maskedDomain}`;
-}
 
 function resetCountdown() {
     countdown.timeLeft = 10 * 60; // รีเซ็ตเวลาเป็น 10 นาที
@@ -98,12 +99,14 @@ function stopCountdown() {
 <template>
     <div class="max-w-[420px] w-full flex flex-col items-center justify-center">
         <NuxtImg src="/logo.png" class="w-20" />
-        <div class="flex flex-col justify-center gap-1 mt-6 w-full">
+        <div class="flex flex-col justify-center gap-2 my-8 w-full">
             <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('code-verification-title') }}</h1>
             <p class="text-base">
                 {{ $t('code-verification-description') }}
             </p>
-            <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-6">{{ auth.emailForCodeVerification }}</b>
+            <b class="text-primary-app dark:text-primary-app-400 font-bold">
+                {{ email }}
+            </b> 
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
             <TFormGroup name="code" :label="$t('code-verification-label')">
@@ -115,22 +118,22 @@ function stopCountdown() {
             </UButton>
         </UForm>
         <div
-            class="mt-8 flex flex-col items-center justify-center gap-1 text-base">
-            <div class="flex-1 flex flex-col items-center justify-center">
+            class="mt-8 flex flex-col items-center justify-center text-base">
+            <div class="flex-1 flex flex-col items-center justify-center gap-2">
                 <span>{{ $t('did-not-receive', {value: 'Code'}) }}</span>
                 <template v-if="!countdown.isFinished">
-                    <b class="text-primary-app dark:text-primary-app-400 font-bold mt-1">
+                    <b class="text-primary-app dark:text-primary-app-400 font-bold">
                         {{ $t('resend-otp-in') }} {{ formattedCountdown }}
                     </b>
                 </template>
                 <template v-else>
                     <b @click="resetCountdown" class="text-primary-app hover:scale-105 cursor-pointer 
-                    transition-all duration-150 ease-in-out dark:text-primary-app-400 font-bold mt-1">
+                    transition-all duration-150 ease-in-out dark:text-primary-app-400 font-bold">
                         {{ $t('resend-otp') }}
                     </b>
                 </template>
             </div>
-            <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`" class="font-bold mt-6 flex gap-2 items-center">
+            <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`" class="font-bold mt-8 flex gap-2 items-center">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> {{ $t('back-to-sign-in') }}
             </NuxtLink>
         </div>

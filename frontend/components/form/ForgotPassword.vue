@@ -46,7 +46,7 @@ onMounted(() => {
 <template>
     <div class="max-w-[420px] w-full flex flex-col items-center justify-center">
         <NuxtImg src="/logo.png" class="w-[60px]" />
-        <div class="flex flex-col justify-center gap-1 my-8 w-full">
+        <div class="flex flex-col justify-center gap-2 mt-10 mb-8 w-full">
             <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('forgot-password-title') }}</h1>
             <p class="text-base">
                 {{ $t('forgot-password-description') }}
@@ -61,9 +61,9 @@ onMounted(() => {
                 {{ $t('continue-button') }}
             </UButton>
         </UForm>
-        <div class="mt-8 flex flex-col items-center justify-center gap-1 text-base">
+        <div class="mt-10 flex flex-col items-center justify-center gap-1 text-base">
             <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`"
-                class="font-bold mt-6 flex gap-2 items-center">
+                class="font-bold flex gap-2 items-center">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> {{ $t('back-to-sign-in') }}
             </NuxtLink>
         </div>

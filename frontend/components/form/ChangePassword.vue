@@ -115,13 +115,13 @@ const getElementHeight = () => {
 <template>
     <div class="max-w-[420px] w-full flex flex-col items-center justify-center">
         <NuxtImg src="/logo.png" class="w-[60px]" />
-        <div class="flex flex-col justify-center gap-1 my-8 w-full">
+        <div class="flex flex-col justify-center gap-2 mt-10 mb-8 w-full">
             <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('change-password-title') }}</h1>
             <p class="text-base">
                 {{ $t('change-password-description') }}
             </p>
         </div>
-        <UForm :validate="validate" :state="state" class="space-y-2 w-full" @submit="onSubmit">
+        <UForm :validate="validate" :state="state" class="space-y-4 w-full" @submit="onSubmit">
             <TFormGroup name="password" class="relative">
                 <UInput :placeholder="$t('password')" size="xl" inputClass="p-4" v-model="state.password"
                     :type="auth.hiddenPassword ? 'password' : 'text'" 
@@ -146,8 +146,12 @@ const getElementHeight = () => {
                         " class="w-5 h-5" />
                 </span>
             </TFormGroup>
-            <div class="text-xs flex flex-col justify-center transition-all duration-300 ease-in-out py-2"
-            :class="state.password || state.c_password ? `h-[${auth.passwordPolicyHeight.toString()}px]` : 'h-0 opacity-0 overflow-hidden'">
+            <div class="text-xs flex flex-col justify-center transition-all duration-300 ease-in-out overflow-hidden"
+                :style="{
+                    maxHeight: state.password || state.c_password ? `${auth.passwordPolicyHeight}px` : '0',
+                    opacity: state.password || state.c_password ? '1' : '0',
+                    marginBottom: state.password || state.c_password ? '32px' : '0',
+                }">
                 <div v-if="auth.passwordPolicy.RequireLowercase" class="flex items-center gap-1">
                     <p :class="validatePassword.some(error => error.message === 'Password must contain a lower case letter') ? 'text-red-500' : 'text-green-500'">
                         <UIcon :name="validatePassword.some(error => error.message === 'Password must contain a lower case letter')
@@ -221,9 +225,9 @@ const getElementHeight = () => {
                 </UButton>
             </div>
         </UForm>
-        <div class="mt-8 flex flex-col items-center justify-center gap-1 text-base">
+        <div class="mt-10 flex flex-col items-center justify-center gap-1 text-base">
             <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`"
-                class="font-bold mt-6 flex gap-2 hover:gap-4 transition-all duration-300 ease-in-out">
+                class="font-bold flex gap-2 hover:gap-4 transition-all duration-300 ease-in-out">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> {{ $t('back-to-sign-in') }}
             </NuxtLink>
         </div>
