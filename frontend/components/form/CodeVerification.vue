@@ -31,7 +31,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     auth.setNotiSuccess({
         isOpen: true,
         state: 'success',
-        url: `http://http://localhost:3000${auth.uri}`,
+        url: `http://localhost:3000/login${auth.uri}`,
         message: 'noti-success-sign-up-title',
         description: 'noti-success-sign-up-description',
     });
@@ -103,10 +103,10 @@ function stopCountdown() {
             <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('code-verification-title') }}</h1>
             <p class="text-base">
                 {{ $t('code-verification-description') }}
+                <b class="text-primary-app dark:text-primary-app-400 font-bold">
+                    {{ email }}
+                </b> 
             </p>
-            <b class="text-primary-app dark:text-primary-app-400 font-bold">
-                {{ email }}
-            </b> 
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
             <TFormGroup name="code" :label="$t('code-verification-label')">

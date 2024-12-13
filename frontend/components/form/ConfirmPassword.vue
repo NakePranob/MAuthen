@@ -56,7 +56,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     // auth.setNotiSuccess({
     //     isOpen: true,
     //     state: 'error',
-    //     url: `http://localhost:3000/forgotpassword${auth.uri}`,
+    //     url: `http://localhost:3000/login${auth.uri}`,
     //     message: 'noti-error-password-change-title',
     //     description: 'noti-error-password-change-description',
     // });
@@ -64,7 +64,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     auth.setNotiSuccess({
         isOpen: true,
         state: 'success',
-        url: 'https://www.youtube.com/',
+        url: `http://localhost:3000/login${auth.uri}`,
         message: 'noti-success-password-change-title',
         description: 'noti-success-password-change-description',
     });

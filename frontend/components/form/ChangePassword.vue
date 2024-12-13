@@ -61,7 +61,14 @@ async function onSubmit(event: FormSubmitEvent<any>) {
 
     if (error.value) {
         console.error("Error message from server:", error || "Unknown error occurred");
-        toast.add({ title: error.value?.data.message });
+        // toast.add({ title: error.value?.data.message });
+        auth.setNotiSuccess({
+            isOpen: true,
+            state: 'error',
+            url: `http://localhost:3000/login${auth.uri}`,
+            message: 'noti-error-password-change-title',
+            description: 'noti-error-password-change-description',
+        });
         return;
     }
     
