@@ -119,7 +119,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
                 {{ $t('sign-in-title') }}
             </UButton>
         </UForm>
-        <p class="text-center text-base">
+        <p class="text-center text-base mt-4">
             {{ $t('dont-have-account') }}
             <NuxtLink @click="auth.setPageView('')" :to="`/register${auth.uri}`"
                 class="text-primary-app dark:text-primary-app-400 font-bold">
