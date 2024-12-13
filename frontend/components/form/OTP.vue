@@ -75,14 +75,15 @@ let countdownInterval: ReturnType<typeof setInterval> | null = null;
 onMounted(() => {
     redirectUri.value = new URLSearchParams(window.location.search).get('redirect_uri') || '';
     client_id.value = new URLSearchParams(window.location.search).get('client_id') || '';
-    if (process.client) {
-        nextTick(() => {
-            startCountdown();
-            getElementHeight();
-        });
+    nextTick(() => {
+        startCountdown();
+        getElementHeight();
+    });
+    if (auth.otpEmail.includes('@')) {
+        email.value = maskEmail(auth.otpEmail);
+    } else {
+        email.value = "+********"+auth.otpEmail.slice(-2);
     }
-    // email.value = maskEmail(auth.otpEmail);
-    email.value = maskEmail("salkdad@sdaks.com");
 
 });
 
@@ -131,7 +132,7 @@ function stopCountdown() {
         <div class="flex flex-col justify-center gap-2 mt-6 mb-4 w-full">
             <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('otp-verification-title') }}</h1>
             <p class="text-base">
-                {{ $t('otp-verification-description') }}
+                {{ auth.otpEmail.includes('@') ? $t('otp-verification-description-email') : $t('otp-verification-description-phone') }}
                 <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-2">{{ email }}</b>
             </p>
         </div>
