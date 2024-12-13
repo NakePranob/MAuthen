@@ -52,7 +52,7 @@ function countdown(seconds: number) {
 
         if (timeLeft <= 0) {
             clearInterval(intervalId);
-            // skip();
+            skip();
         }
     }, 1000);
 }
