@@ -34,7 +34,8 @@
     "thank-you-for-using": "ขอบคุณที่ใช้บริการของเรา หากคุณมีคำถามหรือต้องการความช่วยเหลือเพิ่มเติม โปรดอย่าลังเลที่จะติดต่อเรา",
 
     "otp-verification-title": "ยืนยัน OTP",
-    "otp-verification-description": "รหัส (OTP) ของท่านถูกส่งทางอีเมลไปที่",
+    "otp-verification-description-email": "รหัส (OTP) ของท่านถูกส่งทางอีเมลไปที่",
+    "otp-verification-description-phone": "รหัส (OTP) ของท่านถูกส่งทาง SMS ไปที่",
     "otp-verification-label-leading": "กรอกรหัส",
     "otp-verification-label-center": "(Ref code: csUkC0)",
     "otp-verification-label-trailing": "เพื่อตรวจสอบ",
@@ -60,8 +61,8 @@
     "password-policy-number": "รหัสผ่านต้องมีตัวเลข",
     "password-policy-length": "รหัสผ่านต้องมีความยาวอย่างน้อย {length} ตัวอักษร",
     "password-policy-symbol": "รหัสผ่านต้องมีตัวอักษรพิเศษหรือช่องว่าง",
-    "password-policy-not-space-leading-trailing": "รหัสผ่านไม่ควรมีช่องว่างหน้าและหลัง",
-    "password-policy-not-match": "รหัสผ่านและรหัสผ่านยืนยันตรงกัน",
+    "password-policy-not-space-leading-trailing": "รหัสผ่านต้องไม่มีช่องว่างทั้งด้านหน้าและด้านหลัง",
+    "password-policy-not-match": "รหัสผ่านและยืนยันรหัสผ่านต้องตรงกัน",
 
     "noti-redirecting-in": "กำลังกลับสู่หน้าหลัก",
     "noti-success-button": "ข้าม",

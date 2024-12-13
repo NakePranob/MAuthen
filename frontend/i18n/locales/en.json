@@ -34,7 +34,8 @@
     "thank-you-for-using": "Thank you for using our service. If you have any questions or need further assistance, please do not hesitate to contact us.",
 
     "otp-verification-title": "OTP Verification",
-    "otp-verification-description": "One-Time Password (OTP) has been sent via email to",
+    "otp-verification-description-email": "One-Time Password (OTP) has been sent via email to",
+    "otp-verification-description-phone": "One-Time Password (OTP) has been sent via SMS to",
     "otp-verification-label-leading": "Enter The OTP",
     "otp-verification-label-center": "(Ref code: csUkC0)",
     "otp-verification-label-trailing": "below to verify it",
