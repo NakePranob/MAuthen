@@ -128,12 +128,12 @@ function stopCountdown() {
 <template>
     <div class="max-w-[420px] w-full flex flex-col items-center justify-center gap-y-4">
         <NuxtImg src="/logo.png" class="w-20" />
-        <div class="flex flex-col justify-center gap-2 mt-6 w-full">
+        <div class="flex flex-col justify-center gap-2 mt-6 mb-4 w-full">
             <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('otp-verification-title') }}</h1>
             <p class="text-base">
                 {{ $t('otp-verification-description') }}
+                <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-2">{{ email }}</b>
             </p>
-            <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-2">{{ email }}</b>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
             <TFormGroup name="otp">

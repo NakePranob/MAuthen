@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { set } from 'zod';
 
 export const useAuthStore = defineStore('auth', {
     state: () => {
