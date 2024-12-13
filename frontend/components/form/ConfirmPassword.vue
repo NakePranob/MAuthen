@@ -126,7 +126,7 @@ const getElementHeight = () => {
                         " class="w-5 h-5" />
                 </span>
             </TFormGroup>
-            <div class="text-xs flex flex-col justify-center transition-all duration-700 ease-in-out overflow-hidden"
+            <div class="text-xs flex flex-col justify-center transition-all duration-300 ease-in-out overflow-hidden"
                 :style="{
                     maxHeight: state.password || state.c_password ? `${auth.passwordPolicyHeight}px` : '0',
                     opacity: state.password || state.c_password ? '1' : '0',
