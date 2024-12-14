@@ -3,7 +3,7 @@
         <div class="grid grid-cols-10">
             <div class="fixed top-4 items-center right-4 flex gap-2">
                 <!-- Theme -->
-                <!-- <button class="flex justify-center items-center me-2">
+                <button class="flex justify-center items-center me-2">
                     <template v-if="$colorMode.value === 'dark'">
                         <UTooltip :text="$t('switch-to-ligth')" :open-delay="300">
                             <UIcon name="i-heroicons-moon-solid"  class="rounded-full sm:w-8 sm:h-8 h-8 w-8"
@@ -31,7 +31,7 @@
                             />
                         </UTooltip>
                     </template>
-                </button> -->
+                </button>
                 <!-- Language -->
                 <button class="flex justify-center items-center">
                     <template v-if="getLocaleCookie() === 'en'">
