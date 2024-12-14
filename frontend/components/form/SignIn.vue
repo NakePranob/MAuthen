@@ -2,7 +2,8 @@
 import { z } from 'zod';
 import type { FormSubmitEvent } from '#ui/types';
 import { useAuthStore } from '@/stores/auth';
-// import type { User } from '@/types/user'
+import Circular from '@/components/Circular.vue';
+const router = useRouter()
 
 const toast = useToast();
 const auth = useAuthStore();
@@ -10,32 +11,12 @@ const client_id = ref('');
 const redirectUri = ref('');
 const formElement = ref();
 const xsrfToken = useCookie('XSRFTOKEN');
-const errorMsg = useCookie('cognito-fl');
-
-const decodedBase64 = (token: string) => {
-    // ตรวจสอบและเพิ่ม padding หากจำเป็น
-    const paddedEncodedToken = token.padEnd(token.length + (4 - (token.length % 4)) % 4, '=');
-
-    // ถอดรหัส Base64
-    const decodedToken = atob(paddedEncodedToken);
-
-    // แปลงข้อมูลจาก String เป็น JSON
-    const decodedJson = JSON.parse(decodedToken);
-    console.log(decodedJson);
-
-    return decodedJson;
-};
+const isLoading = ref(false);
 
 onMounted(() => {
     redirectUri.value = new URLSearchParams(window.location.search).get('redirect_uri') || '';
     client_id.value = new URLSearchParams(window.location.search).get('client_id') || '';
     getElementHeight();
-    if (errorMsg.value && errorMsg.value !== 'W10=') {
-        const err = decodedBase64(errorMsg.value);
-        toast.add({ title: err.map.loginErrorMessage });
-        errorMsg.value = btoa('[]');
-        console.log(err);
-    }
 });
 
 const getElementHeight = () => {
@@ -57,30 +38,49 @@ const state = reactive({
     password: undefined
 });
 
-const createHiddenInput = (name: string, value: string): HTMLInputElement => {
-  const input = document.createElement('input');
-  input.type = 'hidden';
-  input.name = name;
-  input.value = value;
-  return input;
-};
+
 
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
-  try {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = `http://localhost:3002/api/v1/auth/login${auth.uri}`;
-    form.style.display = 'none';
+    if (isLoading.value) return;
+    isLoading.value = true;
 
-    form.appendChild(createHiddenInput('username', event.data.email));
-    form.appendChild(createHiddenInput('password', event.data.password));
-    form.appendChild(createHiddenInput('_csrf', xsrfToken.value || ''));
+    try {
+        const { data, error } = await useFetch(`http://localhost:3002/api/v1/auth/login${auth.uri}`, {
+            method: 'POST',
+            credentials: 'include',
+            body: {
+                username: event.data.email,
+                password: event.data.password,
+                _csrf: xsrfToken.value || '',
+            },
+        });
 
-    document.body.appendChild(form);
-    form.submit();
-  } catch (error) {
-    console.error('Error submitting form:', error);
-  }
+        if (error.value) {
+            console.error('Error message from server:', error || 'Unknown error occurred');
+            if (error.value.data.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
+                toast.add({ title: error.value?.data.message });
+                console.error('Error', error.value?.data);
+                auth.setChangPassword({
+                    session: error.value.data.Session,
+                    email: error.value.data.ChallengeParameters.userAttributes.email,
+                });
+                auth.setPageView('changePassword');
+            } else {
+                toast.add({ title: error.value?.data.message });
+            }
+            return;
+        }
+
+        console.log('Response from server:', data.value);
+
+        if (data.value) {
+            auth.setPageView('otp');
+        }
+    } catch (err) {
+        console.error('Unexpected error:', err);
+    } finally {
+        isLoading.value = false; // ปิดสถานะกำลังโหลด
+    }
 };
 
 </script>
@@ -114,8 +114,13 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
                     {{ $t('forgot-password') }}
                 </NuxtLink @click="auth.setPageView('')">
             </div>
-            <UButton type="submit" block size="xl" :padded="false" :ui="{ font: '!text-base' }"
+            <UButton
+                :loading="isLoading"
+                type="submit" block size="xl" :padded="false" :ui="{ font: '!text-base' }"
                 class="dark:text-slate-100 py-4">
+                <template v-if="isLoading" #leading>
+                    <Circular size="16" color="white"/>
+                </template>
                 {{ $t('sign-in-title') }}
             </UButton>
         </UForm>
