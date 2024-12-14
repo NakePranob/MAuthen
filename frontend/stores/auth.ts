@@ -11,6 +11,10 @@ export const useAuthStore = defineStore('auth', {
             otpEmail: '',
             emailForCodeVerification: '',
             emailForgotPassword: '',
+            changPassword: {
+                session: '',
+                email: ''
+            },
             notiSuccess: {
                 isOpen: false,
                 state: "",
@@ -40,6 +44,7 @@ export const useAuthStore = defineStore('auth', {
         },
         setPageView(view: string) {
             this.pageView = view;
+            console.log("setPageView:", view)
         },
         setNotiSuccess(obj: {
             isOpen: boolean,
@@ -58,6 +63,12 @@ export const useAuthStore = defineStore('auth', {
         },
         setEmailForgotPassword(email: string) {
             this.emailForgotPassword = email;
+        },
+        setChangPassword(obj: {
+            session: string,
+            email: string
+        }) {
+            this.changPassword = obj;
         },
         setPasswordPolicy(obj: {
             MinimumLength: number,
