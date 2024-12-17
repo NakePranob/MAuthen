@@ -6,6 +6,7 @@ const toast = useToast();
 const auth = useAuthStore();
 const formElement = ref();
 const client_id = ref('');
+const isLoading = ref(false);
 
 onMounted(() => {
     getElementHeight();
@@ -55,28 +56,41 @@ const state = reactive({
     password: undefined,
 })
 
-async function onSubmit(event: FormSubmitEvent<any>) {
-    // Do something with event.data
-    console.log(event.data);
-    const formData = {
-        username: event.data.email,
-        password: event.data.password,
+async function onSubmit(event: FormSubmitEvent<{
+    email: string,
+    password: string,
+}>) {
+    if (isLoading.value) return;
+    isLoading.value = true;
+
+    try {
+        const formData = {
+            username: event.data.email,
+            password: event.data.password,
+        }
+        const { data, error } = await useFetch(`http://localhost:3002/api/v1/auth/register${auth.uri}`, {
+            method: "POST",
+            body: formData,
+        });
+
+        if (error.value) {
+            console.error("Error message from server:", error || "Unknown error occurred");
+            toast.add({ title: error.value?.data.message });
+            isLoading.value = false;
+            return;
+        }
+
+        if (data.value) {
+            auth.setEmailForCodeVerification(event.data.email);
+            auth.setPageView('codeVerification');
+        }
+    } catch (err) {
+        console.error("Unexpected error:", err);
+        toast.add({ title: 'An unexpected error occurred' });
+        isLoading.value = false;
+    } finally {
+        isLoading.value = false;
     }
-    const { data, error } = await useFetch(`http://localhost:3002/api/v1/auth/register${auth.uri}`, {
-        method: "POST",
-        body: formData,
-    });
-
-    if (error.value) {
-        console.error("Error message from server:", error || "Unknown error occurred");
-        toast.add({ title: error.value?.data.message });
-        return;
-    }
-
-    console.log("Response from server:", data.value);
-
-    auth.setEmailForCodeVerification(event.data.email);
-    auth.setPageView('codeVerification');
 }
 
 </script>
@@ -106,14 +120,14 @@ async function onSubmit(event: FormSubmitEvent<any>) {
                         " class="w-5 h-5" />
                 </p>
             </TFormGroup>
-            <div class="text-xs transition-all duration-300 ease-in-out overflow-hidden"
-                :style="{
-                    maxHeight: state.password ? `${auth.passwordPolicyHeight}px` : '0',
-                    opacity: state.password ? '1' : '0',
-                    marginBottom: state.password ? '32px' : '0',
-                }">
+            <div class="text-xs transition-all duration-300 ease-in-out overflow-hidden" :style="{
+                maxHeight: state.password ? `${auth.passwordPolicyHeight}px` : '0',
+                opacity: state.password ? '1' : '0',
+                marginBottom: state.password ? '32px' : '0',
+            }">
                 <div v-if="auth.passwordPolicy.RequireLowercase" class="flex items-center gap-1">
-                    <p :class="validatePassword.some(error => error.message === 'Password must contain a lower case letter') ? 'text-red-500' : 'text-green-500'">
+                    <p
+                        :class="validatePassword.some(error => error.message === 'Password must contain a lower case letter') ? 'text-red-500' : 'text-green-500'">
                         <UIcon :name="validatePassword.some(error => error.message === 'Password must contain a lower case letter')
                             ? 'i-heroicons-x-mark-20-solid'
                             : 'i-heroicons-check-20-solid'
@@ -122,16 +136,18 @@ async function onSubmit(event: FormSubmitEvent<any>) {
                     {{ $t('password-policy-lowercase') }}
                 </div>
                 <div v-if="auth.passwordPolicy.RequireUppercase" class="flex items-center gap-1">
-                    <p :class="validatePassword.some(error => error.message === 'Password must contain an upper case letter') ? 'text-red-500' : 'text-green-500'">
+                    <p
+                        :class="validatePassword.some(error => error.message === 'Password must contain an upper case letter') ? 'text-red-500' : 'text-green-500'">
                         <UIcon :name="validatePassword.some(error => error.message === 'Password must contain an upper case letter')
                             ? 'i-heroicons-x-mark-20-solid'
                             : 'i-heroicons-check-20-solid'
                             " class="w-4 text-sm" />
                     </p>
-                    {{  $t('password-policy-uppercase') }}
+                    {{ $t('password-policy-uppercase') }}
                 </div>
                 <div v-if="auth.passwordPolicy.RequireNumbers" class="flex items-center gap-1">
-                    <p :class="validatePassword.some(error => error.message === 'Password must contain a number') ? 'text-red-500' : 'text-green-500'">
+                    <p
+                        :class="validatePassword.some(error => error.message === 'Password must contain a number') ? 'text-red-500' : 'text-green-500'">
                         <UIcon :name="validatePassword.some(error => error.message === 'Password must contain a number')
                             ? 'i-heroicons-x-mark-20-solid'
                             : 'i-heroicons-check-20-solid'
@@ -140,7 +156,8 @@ async function onSubmit(event: FormSubmitEvent<any>) {
                     {{ $t('password-policy-number') }}
                 </div>
                 <div class="flex items-center gap-1">
-                    <p :class="validatePassword.some(error => error.message === `Password must contain at least ${auth.passwordPolicy.MinimumLength} characters`) ? 'text-red-500' : 'text-green-500'">
+                    <p
+                        :class="validatePassword.some(error => error.message === `Password must contain at least ${auth.passwordPolicy.MinimumLength} characters`) ? 'text-red-500' : 'text-green-500'">
                         <UIcon :name="validatePassword.some(error => error.message === `Password must contain at least ${auth.passwordPolicy.MinimumLength} characters`)
                             ? 'i-heroicons-x-mark-20-solid'
                             : 'i-heroicons-check-20-solid'
@@ -149,7 +166,8 @@ async function onSubmit(event: FormSubmitEvent<any>) {
                     {{ $t('password-policy-length', { length: auth.passwordPolicy.MinimumLength }) }}
                 </div>
                 <div v-if="auth.passwordPolicy.RequireSymbols" class="flex items-center gap-1">
-                    <p :class="validatePassword.some(error => error.message === 'Password must contain a special character or a space') ? 'text-red-500' : 'text-green-500'">
+                    <p
+                        :class="validatePassword.some(error => error.message === 'Password must contain a special character or a space') ? 'text-red-500' : 'text-green-500'">
                         <UIcon :name="validatePassword.some(error => error.message === 'Password must contain a special character or a space')
                             ? 'i-heroicons-x-mark-20-solid'
                             : 'i-heroicons-check-20-solid'
@@ -158,7 +176,8 @@ async function onSubmit(event: FormSubmitEvent<any>) {
                     {{ $t('password-policy-symbol') }}
                 </div>
                 <div class="flex items-center gap-1">
-                    <p :class="validatePassword.some(error => error.message === 'Password must not contain a leading or trailing space') ? 'text-red-500' : 'text-green-500'">
+                    <p
+                        :class="validatePassword.some(error => error.message === 'Password must not contain a leading or trailing space') ? 'text-red-500' : 'text-green-500'">
                         <UIcon :name="validatePassword.some(error => error.message === 'Password must not contain a leading or trailing space')
                             ? 'i-heroicons-x-mark-20-solid'
                             : 'i-heroicons-check-20-solid'
@@ -167,8 +186,11 @@ async function onSubmit(event: FormSubmitEvent<any>) {
                     {{ $t("password-policy-not-space-leading-trailing") }}
                 </div>
             </div>
-            <UButton type="submit" block size="xl" :padded="false" :ui="{ font: '!text-base' }"
+            <UButton :loading="isLoading" type="submit" block size="xl" :padded="false" :ui="{ font: '!text-base' }"
                 class="dark:text-slate-100 py-4">
+                <template v-if="isLoading" #leading>
+                    <Circular size="16" color="white" />
+                </template>
                 {{ $t('sign-up-title') }}
             </UButton>
         </UForm>

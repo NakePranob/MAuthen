@@ -41,10 +41,6 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     isLoading.value = true;
 
     console.log(event.data)
-    console.log("session", auth.changPassword.session)
-    console.log("email", auth.changPassword.email)
-
-
     const formData = {
         session: auth.changPassword.session,
         username: auth.changPassword.email,
@@ -52,7 +48,9 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     }
 
     try {
-        const { data, error } = await useFetch<{ redirectUrl: string }>(`http://localhost:3002/api/v1/auth/newPassword${auth.uri}`, {
+        const { data, error } = await useFetch<{ 
+            redirectUrl: string 
+        }>(`http://localhost:3002/api/v1/auth/force-change-password${auth.uri}`, {
             method: 'POST',
             body: formData,
             credentials: 'include',
@@ -61,33 +59,26 @@ async function onSubmit(event: FormSubmitEvent<any>) {
         if (error.value) {
             console.error("Error message from server:", error || "Unknown error occurred");
             toast.add({ title: error.value?.data.message });
-            // auth.setNotiSuccess({
-            //     isOpen: true,
-            //     state: 'error',
-            //     url: `http://localhost:3000/login${auth.uri}`,
-            //     message: 'noti-error-password-change-title',
-            //     description: 'noti-error-password-change-description',
-            // });
+            isLoading.value = false;
             return;
         }
 
-        if (data.value?.redirectUrl === undefined) {
-            toast.add({ title: 'Unknown error occurred' })
-            return
+        if (data.value) {
+            auth.setPageView("");
+            auth.setNotiSuccess({
+                isOpen: true,
+                state: 'success',
+                url: data.value?.redirectUrl,
+                message: 'noti-success-password-change-title',
+                description: 'noti-success-password-change-description',
+            });
         }
-
-        auth.setPageView("");
-        auth.setNotiSuccess({
-            isOpen: true,
-            state: 'success',
-            url: data.value?.redirectUrl,
-            message: 'noti-success-password-change-title',
-            description: 'noti-success-password-change-description',
-        });
     } catch (err) {
         console.error('Unexpected error:', err);
+        toast.add({ title: 'An unexpected error occurred' });
+        isLoading.value = false;
     } finally {
-        isLoading.value = false; // ปิดสถานะกำลังโหลด
+        isLoading.value = false;
     }
 }
 

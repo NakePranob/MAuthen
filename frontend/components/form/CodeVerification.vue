@@ -4,15 +4,17 @@ import type { FormSubmitEvent } from '#ui/types'
 import { useAuthStore } from '@/stores/auth';
 
 const auth = useAuthStore();
+const toast = useToast();
 const formElement = ref();
 const email = ref('');
+const isLoading = ref(false);
 
 function maskEmail(email: string) {
-  const [localPart, domain] = email.split("@");
-  const maskedLocalPart = localPart[0] + "*".repeat(localPart.length - 1);
-  const domainParts = domain.split(".");
-  const maskedDomain = domainParts[0][0] + "*".repeat(domainParts[0].length - 1) + ".";
-  return `${maskedLocalPart}@${maskedDomain}`;
+    const [localPart, domain] = email.split("@");
+    const maskedLocalPart = localPart[0] + "*".repeat(localPart.length - 1);
+    const domainParts = domain.split(".");
+    const maskedDomain = domainParts[0][0] + "*".repeat(domainParts[0].length - 1) + ".";
+    return `${maskedLocalPart}@${maskedDomain}`;
 }
 
 const schema = z.object({
@@ -26,15 +28,26 @@ const state = reactive({
 })
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    console.log(event.data)
-    auth.setPageView("");
-    auth.setNotiSuccess({
-        isOpen: true,
-        state: 'success',
-        url: `http://localhost:3000/login${auth.uri}`,
-        message: 'noti-success-sign-up-title',
-        description: 'noti-success-sign-up-description',
-    });
+    if (isLoading.value) return;
+    isLoading.value = true;
+
+    try {
+        console.log(event.data)
+        auth.setPageView("");
+        auth.setNotiSuccess({
+            isOpen: true,
+            state: 'success',
+            url: `http://localhost:3000/login${auth.uri}`,
+            message: 'noti-success-sign-up-title',
+            description: 'noti-success-sign-up-description',
+        });
+    } catch (error) {
+        console.error('Unexpected error:', error);
+        toast.add({ title: 'An unexpected error occurred' });
+        isLoading.value = false;
+    } finally {
+        isLoading.value = false;
+    }
 }
 
 const countdown = reactive({
@@ -100,27 +113,31 @@ function stopCountdown() {
     <div class="max-w-[420px] w-full flex flex-col items-center justify-center">
         <NuxtImg src="/logo.png" class="w-20" />
         <div class="flex flex-col justify-center gap-2 my-8 w-full">
-            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('code-verification-title') }}</h1>
+            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{
+                $t('code-verification-title') }}</h1>
             <p class="text-base">
                 {{ $t('code-verification-description') }}
                 <b class="text-primary-app dark:text-primary-app-400 font-bold">
                     {{ email }}
-                </b> 
+                </b>
             </p>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
             <TFormGroup name="code" :label="$t('code-verification-label')">
-                <UInput v-model="state.code" size="xl" inputClass="text-center py-4 text-base mt-1" :placeholder="$t('code-verification-placeholder')"/>
+                <UInput v-model="state.code" size="xl" inputClass="text-center py-4 text-base mt-1"
+                    :placeholder="$t('code-verification-placeholder')" />
             </TFormGroup>
-            <UButton type="submit" block size="xl" :padded="false" :ui="{font: '!text-base'}" 
-            class="dark:text-slate-100 py-4">
+            <UButton :loading="isLoading" type="submit" block size="xl" :padded="false" :ui="{ font: '!text-base' }"
+                class="dark:text-slate-100 py-4">
+                <template v-if="isLoading" #leading>
+                    <Circular size="16" color="white" />
+                </template>
                 {{ $t('verify-button') }}
             </UButton>
         </UForm>
-        <div
-            class="mt-8 flex flex-col items-center justify-center text-base">
+        <div class="mt-8 flex flex-col items-center justify-center text-base">
             <div class="flex-1 flex flex-col items-center justify-center gap-2">
-                <span>{{ $t('did-not-receive', {value: 'Code'}) }}</span>
+                <span>{{ $t('did-not-receive', { value: 'Code' }) }}</span>
                 <template v-if="!countdown.isFinished">
                     <b class="text-primary-app dark:text-primary-app-400 font-bold">
                         {{ $t('resend-otp-in') }} {{ formattedCountdown }}
@@ -133,7 +150,8 @@ function stopCountdown() {
                     </b>
                 </template>
             </div>
-            <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`" class="font-bold mt-8 flex gap-2 items-center">
+            <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`"
+                class="font-bold mt-8 flex gap-2 items-center">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> {{ $t('back-to-sign-in') }}
             </NuxtLink>
         </div>

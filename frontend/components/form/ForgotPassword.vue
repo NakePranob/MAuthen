@@ -4,7 +4,9 @@ import type { FormSubmitEvent } from '#ui/types'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore();
+const toast = useToast();
 const formElement = ref();
+const isLoading = ref(false);
 
 const schema = z.object({
     email: z
@@ -24,10 +26,20 @@ const state = reactive({
 })
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    // Do something with event.data
-    console.log(event.data)
-    auth.setEmailForgotPassword(event.data.email);
-    auth.pageView = 'confirmPassword';
+    if (isLoading.value) return;
+    isLoading.value = true;
+    
+    try {
+        console.log(event.data)
+        auth.setEmailForgotPassword(event.data.email);
+        auth.pageView = 'confirmPassword';
+    } catch (error) {
+        console.error('Unexpected error:', error);
+        toast.add({ title: 'An unexpected error occurred' });
+        isLoading.value = false;
+    } finally {
+        isLoading.value = false;
+    }
 }
 
 const getElementHeight = () => {
@@ -56,8 +68,11 @@ onMounted(() => {
             <TFormGroup name="email">
                 <UInput v-model="state.email" size="xl" inputClass="p-4" :placeholder="$t('email-address')" />
             </TFormGroup>
-            <UButton type="submit" block size="xl" :padded="false" :ui="{ font: '!text-base' }"
+            <UButton :loading="isLoading" type="submit" block size="xl" :padded="false" :ui="{ font: '!text-base' }"
                 class="dark:text-slate-100 py-4">
+                <template v-if="isLoading" #leading>
+                    <Circular size="16" color="white" />
+                </template>
                 {{ $t('continue-button') }}
             </UButton>
         </UForm>
