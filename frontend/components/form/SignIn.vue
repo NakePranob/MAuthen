@@ -3,7 +3,6 @@ import { z } from 'zod';
 import type { FormSubmitEvent } from '#ui/types';
 import { useAuthStore } from '@/stores/auth';
 import Circular from '@/components/Circular.vue';
-const router = useRouter()
 
 const toast = useToast();
 const auth = useAuthStore();
@@ -38,14 +37,15 @@ const state = reactive({
     password: undefined
 });
 
-
-
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     if (isLoading.value) return;
     isLoading.value = true;
 
     try {
-        const { data, error } = await useFetch(`http://localhost:3002/api/v1/auth/login${auth.uri}`, {
+        const { data, error } = await useFetch<{
+          challengeName: string,
+          session: string,
+        }>(`http://localhost:3002/api/v1/auth/login${auth.uri}`, {
             method: 'POST',
             credentials: 'include',
             body: {
@@ -59,7 +59,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
             console.error('Error message from server:', error || 'Unknown error occurred');
             if (error.value.data.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
                 toast.add({ title: error.value?.data.message });
-                console.error('Error', error.value?.data);
+            isLoading.value = false;
                 auth.setChangPassword({
                     session: error.value.data.Session,
                     email: error.value.data.ChallengeParameters.userAttributes.email,
@@ -67,19 +67,25 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
                 auth.setPageView('changePassword');
             } else {
                 toast.add({ title: error.value?.data.message });
+                isLoading.value = false;
             }
             return;
         }
 
-        console.log('Response from server:', data.value);
-
         if (data.value) {
+            auth.setOTP({
+                email: event.data.email,
+                session: data.value.session,
+                challengeName: data.value.challengeName,
+            });
             auth.setPageView('otp');
         }
     } catch (err) {
         console.error('Unexpected error:', err);
+        toast.add({ title: 'An unexpected error occurred' });
+        isLoading.value = false;
     } finally {
-        isLoading.value = false; // ปิดสถานะกำลังโหลด
+        isLoading.value = false;
     }
 };
 

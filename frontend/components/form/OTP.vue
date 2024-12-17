@@ -5,17 +5,19 @@ import type { FormSubmitEvent } from '#ui/types';
 import { useAuthStore } from '@/stores/auth';
 
 const auth = useAuthStore();
+const toast = useToast();
 const formElement = ref<HTMLFormElement | null>(null);
 const client_id = ref('');
 const redirectUri = ref('');
 const email = ref('');
+const isLoading = ref(false);
 
 function maskEmail(email: string) {
-  const [localPart, domain] = email.split("@");
-  const maskedLocalPart = localPart[0] + "*".repeat(localPart.length - 1);
-  const domainParts = domain.split(".");
-  const maskedDomain = domainParts[0][0] + "*".repeat(domainParts[0].length - 1) + ".";
-  return `${maskedLocalPart}@${maskedDomain}`;
+    const [localPart, domain] = email.split("@");
+    const maskedLocalPart = localPart[0] + "*".repeat(localPart.length - 1);
+    const domainParts = domain.split(".");
+    const maskedDomain = domainParts[0][0] + "*".repeat(domainParts[0].length - 1) + ".";
+    return `${maskedLocalPart}@${maskedDomain}`;
 }
 
 const schema = z.object({
@@ -29,34 +31,43 @@ const state = reactive({
 });
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-    console.log(event.data);
-    // const formData = {
-    //     username: auth.otpEmail,
-    //     otp: event.data.otp,
-    //     client_id: client_id.value,
-    //     refresh_token: auth.refreshToken,
-    // };
+    if (isLoading.value) return;
+    isLoading.value = true;
 
-    // console.log('formData', formData);
+    try {
+        console.log(event.data);
+        const formData = {
+            username: auth.otp.email,
+            challengeName: {
+                ANSWER: event.data.otp
+            },
+            session: auth.otp.session,
+        };
 
-    // try {
-    //     const { data } = await useFetch<any>('http://localhost:3002/api/v1/auth/loginverify', {
-    //         method: 'POST',
-    //         body: formData,
-    //         credentials: 'include',
-    //     });
+        const { data, error } = await useFetch<{
+            redirectUrl: string;
+        }>('http://localhost:3002/api/v1/auth/respond-to-challenge', {
+            method: 'POST',
+            body: formData,
+            credentials: 'include',
+        });
 
-    //     console.log('data', data.value)
+        if (error.value) {
+            console.error('Error message from server:', error || 'Unknown error occurred');
+            toast.add({ title: error.value?.data.message });
+            isLoading.value = false;
+        }
 
-    //     // if (data.value?.message && data.value?.awsCredentials) {
-    //     //     window.location.href = 'https://www.youtube.com/';
-    //     // } else {
-    //     //     console.error('API response does not contain expected fields.');
-    //     // }
-    // } catch (error) {
-    //     console.error('Error submitting form:', error);
-    // }
-    window.location.href = 'https://www.youtube.com/';
+        if (data.value) {
+            window.location.href = data.value.redirectUrl;
+        }
+    } catch (error) {
+        console.error('Unexpected error:', error);
+        toast.add({ title: 'An unexpected error occurred' });
+        isLoading.value = false;
+    } finally {
+        isLoading.value = false;
+    }
 }
 
 const countdown = reactive({
@@ -79,10 +90,10 @@ onMounted(() => {
         startCountdown();
         getElementHeight();
     });
-    if (auth.otpEmail.includes('@')) {
-        email.value = maskEmail(auth.otpEmail);
+    if (auth.otp.email.includes('@')) {
+        email.value = maskEmail(auth.otp.email);
     } else {
-        email.value = "+********"+auth.otpEmail.slice(-2);
+        email.value = "+********" + auth.otp.email.slice(-2);
     }
 
 });
@@ -130,33 +141,38 @@ function stopCountdown() {
     <div class="max-w-[420px] w-full flex flex-col items-center justify-center gap-y-4">
         <NuxtImg src="/logo.png" class="w-20" />
         <div class="flex flex-col justify-center gap-2 mt-6 mb-4 w-full">
-            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('otp-verification-title') }}</h1>
+            <h1 class="text-[32px] font-bold text-primary-app dark:text-primary-app-400">{{ $t('otp-verification-title')
+                }}</h1>
             <p class="text-base">
-                {{ auth.otpEmail.includes('@') ? $t('otp-verification-description-email') : $t('otp-verification-description-phone') }}
+                {{ auth.otp.email.includes('@') ? $t('otp-verification-description-email') :
+                    $t('otp-verification-description-phone') }}
                 <b class="text-primary-app dark:text-primary-app-400 font-bold text-base mb-2">{{ email }}</b>
             </p>
         </div>
         <UForm :schema="schema" :state="state" class="space-y-8 w-full" @submit="onSubmit">
             <TFormGroup name="otp">
                 <label>
-                    {{ $t('otp-verification-label-leading') }} 
-                    <b>{{ $t('otp-verification-label-center') }}</b> 
+                    {{ $t('otp-verification-label-leading') }}
+                    <b>{{ $t('otp-verification-label-center') }}</b>
                     {{ $t('otp-verification-label-trailing') }}
                 </label>
                 <UInput v-model="state.otp" size="xl" :placeholder="$t('otp-verification-placeholder')" maxlength="8"
                     inputClass="text-center py-4 text-base mt-1" />
             </TFormGroup>
             <TFormGroup>
-                <UButton type="submit" block size="xl" :padded="false" :ui="{
+                <UButton :loading="isLoading" type="submit" block size="xl" :padded="false" :ui="{
                     font: '!text-base',
                 }" class="dark:text-slate-100 py-4">
+                    <template v-if="isLoading" #leading>
+                        <Circular size="16" color="white" />
+                    </template>
                     Verify
                 </UButton>
             </TFormGroup>
         </UForm>
         <div class="mt-4 flex flex-col items-center justify-center text-base">
             <div class="flex-1 flex flex-col items-center justify-center gap-2">
-                <span>{{ $t('did-not-receive', {value: 'OTP'}) }}</span>
+                <span>{{ $t('did-not-receive', { value: 'OTP' }) }}</span>
                 <template v-if="!countdown.isFinished">
                     <b class="text-primary-app dark:text-primary-app-400 font-bold">
                         {{ $t('resend-otp-in') }} {{ formattedCountdown }}
@@ -165,7 +181,7 @@ function stopCountdown() {
                 <template v-else>
                     <b @click="resetCountdown" class="text-primary-app hover:scale-105 cursor-pointer 
                     transition-all duration-150 ease-in-out dark:text-primary-app-400 font-bold">
-                    {{ $t('resend-otp') }}
+                        {{ $t('resend-otp') }}
                     </b>
                 </template>
             </div>
