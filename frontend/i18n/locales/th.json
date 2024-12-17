@@ -53,7 +53,7 @@
     "otp-policy-length": "รหัสต้องมีความยาวอย่างน้อย 8 ตัวอักษร",
     "code-policy-required": "กรุณากรอกรหัส",
     "email-policy-required": "กรุณากรอกอีเมล",
-    "email-policy-invalid": "รูปแบบอีเมลไม่ถูกต้อง",
+    "email-policy-invalid": "กรุณากรอกอีเมล",
     "email-policy-is-themall-or-emporiumthailand": "ในกรณีของที่อยู่อีเมล The Mall Group (TMG) กรุณาติดต่อ IT Helpdesk ที่หมายเลข 02-239-1355 หรือ ithelpdesk{atSignSymbol}themall.co.th เพื่อขอรับความช่วยเหลือ",
     "password-policy-required": "กรุณากรอกรหัสผ่าน",
     "password-policy-lowercase": "รหัสผ่านต้องมีตัวอักษรพิมพ์เล็ก",
