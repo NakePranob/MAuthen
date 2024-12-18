@@ -21,7 +21,7 @@ function maskEmail(email: string) {
 }
 
 const schema = z.object({
-    otp: z.string({ message: 'otp-policy-required' }).min(8, 'otp-policy-length'),
+    otp: z.string({ message: 'otp-policy-required' }).min(6, 'otp-policy-length'),
 });
 
 type Schema = z.output<typeof schema>;
@@ -38,15 +38,16 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         console.log(event.data);
         const formData = {
             username: auth.otp.email,
-            challengeName: {
-                ANSWER: event.data.otp
-            },
+            challengeName: auth.otp.challengeName,
             session: auth.otp.session,
+            challengeResponses: {
+                "ANSWER": event.data.otp
+            }
         };
 
         const { data, error } = await useFetch<{
             redirectUrl: string;
-        }>('http://localhost:3002/api/v1/auth/respond-to-challenge', {
+        }>(`http://localhost:3002/api/v1/auth/respond-to-challenge${auth.uri}`, {
             method: 'POST',
             body: formData,
             credentials: 'include',
@@ -54,7 +55,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
         if (error.value) {
             console.error('Error message from server:', error || 'Unknown error occurred');
-            toast.add({ title: error.value?.data.message });
+            toast.add({ title: error.value?.data.error.message });
             isLoading.value = false;
         }
 

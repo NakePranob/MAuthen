@@ -59,7 +59,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
             console.error('Error message from server:', error || 'Unknown error occurred');
             if (error.value.data.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
                 toast.add({ title: error.value?.data.message });
-            isLoading.value = false;
+                isLoading.value = false;
                 auth.setChangPassword({
                     session: error.value.data.Session,
                     email: error.value.data.ChallengeParameters.userAttributes.email,
@@ -116,7 +116,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
                 </span>
             </TFormGroup>
             <div class="text-base pb-6">
-                <NuxtLink @click="auth.setPageView('')" :to="`/forgotpassword${auth.uri}`" class="cursor-pointer">
+                <NuxtLink @click="auth.setPageView('')" :to="`/forgot-password${auth.uri}`" class="cursor-pointer">
                     {{ $t('forgot-password') }}
                 </NuxtLink @click="auth.setPageView('')">
             </div>

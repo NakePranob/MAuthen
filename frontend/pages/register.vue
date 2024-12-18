@@ -43,7 +43,7 @@ onMounted(async () => {
                 RequireSymbols: res.message.RequireSymbols,
                 RequireNumbers: res.message.RequireNumbers,
             });
-            let height = 18;
+            let height = 18 * 2;
             if (res.message.MinimumLength > 0) height += 18;
             if (res.message.RequireUppercase) height += 18;
             if (res.message.RequireLowercase) height += 18;

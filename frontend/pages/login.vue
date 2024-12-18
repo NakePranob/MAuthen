@@ -8,7 +8,7 @@ import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const queryParams = route.query;
-
+const toast = useToast();
 const auth = useAuthStore();
 const client_id = ref('Client Id');
 
@@ -33,13 +33,8 @@ onMounted(async () => {
     }>('http://localhost:3002/api/v1/auth/passwordpolicy');
 
     if (error.value) {
-        auth.setNotiSuccess({
-            isOpen: true,
-            state: 'error',
-            url: `http://localhost:3000/login${auth.uri}`,
-            message: 'noti-error-password-change-title',
-            description: 'noti-error-password-change-description',
-        });
+        toast.add({ title: error.value?.data.message });
+        return;
     }
 
     if (data.value) {

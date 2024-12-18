@@ -7,7 +7,8 @@
 </template>
 
 <script lang="ts" setup>
-const client_id = '37av3n51eo6u8cbfqlgs74aomj';
+// const client_id = '37av3n51eo6u8cbfqlgs74aomj';
+const client_id = '7rm6dj73avbc4ukn6sf9fus910'
 
 
 function generateRandomString(length: number) {
