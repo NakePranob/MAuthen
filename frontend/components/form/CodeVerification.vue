@@ -33,18 +33,37 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
     try {
         console.log(event.data)
-        auth.setPageView("");
-        auth.setNotiSuccess({
-            isOpen: true,
-            state: 'success',
-            url: `http://localhost:3000/login${auth.uri}`,
-            message: 'noti-success-sign-up-title',
-            description: 'noti-success-sign-up-description',
+
+        const { data, error } = await useFetch(`http://localhost:3002/api/v1/auth/register${auth.uri}`, {
+            method: 'POST',
+            body: {
+                username: auth.codeVerification.email,
+                password: auth.codeVerification.password,
+                otp: event.data.code,
+                sessionId: auth.codeVerification.sessionId,
+            },
+            credentials: 'include',
         });
+
+        if (error.value) {
+            console.error("Error message from server:", error || "Unknown error occurred");
+            toast.add({ title: error.value.data.message });
+            return;
+        }
+
+        if (data.value) {
+            auth.setPageView('');
+            auth.setNotiSuccess({
+                isOpen: true,
+                state: 'success',
+                url: `http://localhost:3000/login${auth.uri}`,
+                message: 'noti-success-sign-up-title',
+                description: 'noti-success-sign-up-description',
+            });
+        }
     } catch (error) {
         console.error('Unexpected error:', error);
         toast.add({ title: 'An unexpected error occurred' });
-        isLoading.value = false;
     } finally {
         isLoading.value = false;
     }
@@ -67,7 +86,7 @@ onMounted(() => {
     getElementHeight();
     if (process.client) {
         startCountdown();
-        email.value = maskEmail(auth.emailForCodeVerification);
+        email.value = maskEmail(auth.codeVerification.email);
     }
 });
 

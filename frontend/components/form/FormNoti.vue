@@ -26,7 +26,7 @@
             </UButton>
         </div>
         <template v-if="auth.notiSuccess.state === 'error'">
-            <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`" class="font-bold flex gap-2 hover:gap-4 transition-all duration-300 ease-in-out pt-2">
+            <NuxtLink @click="auth.setPageView('')" :to="`http://localhost:3000/login${auth.uri}`" class="font-bold flex gap-2 hover:gap-4 transition-all duration-300 ease-in-out pt-2">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> {{ $t('back-to-sign-in') }}
             </NuxtLink>
         </template>
@@ -40,6 +40,7 @@ import { useAuthStore } from '@/stores/auth';
 const auth = useAuthStore();
 
 function skip() {
+    auth.setPageView("");
     window.location.href = auth.notiSuccess.url;
 }
 

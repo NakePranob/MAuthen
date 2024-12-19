@@ -10,11 +10,20 @@ export const useAuthStore = defineStore('auth', {
             pageView: '',
             otp: {
                 email: '',
+                password: '',
                 challengeName: '',
                 session: ''
             },
-            emailForCodeVerification: '',
-            emailForgotPassword: '',
+            codeVerification: {
+                email: '',
+                password: '',
+                sessionId: '',
+                code: ''
+            },
+            forgotPassword: {
+                email: '',
+                sessionId: ''
+            },
             changPassword: {
                 session: '',
                 email: ''
@@ -58,19 +67,29 @@ export const useAuthStore = defineStore('auth', {
             description: string
         }) {
             this.notiSuccess = obj;
+            console.log(this.notiSuccess);
         },
         setOTP(obj: {
             email: string,
+            password: string,
             challengeName: string,
             session: string
         }) {
             this.otp = obj;
         },
-        setEmailForCodeVerification(email: string) {
-            this.emailForCodeVerification = email;
+        setCodeVerification(obj: {
+            email: string,
+            password: string,
+            sessionId: string,
+            code: string
+        }) {
+            this.codeVerification = obj;
         },
-        setEmailForgotPassword(email: string) {
-            this.emailForgotPassword = email;
+        setForgotPassword(obj: {
+            email: string,
+            sessionId: string
+        }) {
+            this.forgotPassword = obj;
         },
         setChangPassword(obj: {
             session: string,

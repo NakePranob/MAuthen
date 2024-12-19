@@ -36,27 +36,36 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
     try {
         console.log(event.data);
-        const formData = {
-            username: auth.otp.email,
-            challengeName: auth.otp.challengeName,
-            session: auth.otp.session,
-            challengeResponses: {
-                "ANSWER": event.data.otp
-            }
-        };
 
         const { data, error } = await useFetch<{
             redirectUrl: string;
         }>(`http://localhost:3002/api/v1/auth/respond-to-challenge${auth.uri}`, {
             method: 'POST',
-            body: formData,
+            body: {
+                username: auth.otp.email,
+                password: auth.otp.password,
+                challengeName: auth.otp.challengeName,
+                session: auth.otp.session,
+                challengeResponses: {
+                    ANSWER: event.data.otp
+                }
+            },
             credentials: 'include',
         });
 
         if (error.value) {
             console.error('Error message from server:', error || 'Unknown error occurred');
-            toast.add({ title: error.value?.data.error.message });
-            isLoading.value = false;
+            if (error.value.data.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
+                toast.add({ title: error.value?.data.message });
+                auth.setChangPassword({
+                    session: error.value.data.Session,
+                    email: error.value.data.ChallengeParameters.userAttributes.email,
+                });
+                auth.setPageView('changePassword');
+            } else {
+                toast.add({ title: error.value?.data.message });
+            }
+            return;
         }
 
         if (data.value) {
@@ -65,7 +74,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     } catch (error) {
         console.error('Unexpected error:', error);
         toast.add({ title: 'An unexpected error occurred' });
-        isLoading.value = false;
     } finally {
         isLoading.value = false;
     }
