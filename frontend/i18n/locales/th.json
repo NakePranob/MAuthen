@@ -4,7 +4,7 @@
     "switch-to-dark": "เปลี่ยนธีมเป็นมืด",
     "back-to-sign-in": "กลับไปยังหน้าเข้าสู่ระบบ",
     "email": "อีเมล",
-    "email-address": "ที่อยู่อีเมล",
+    "email-address": "อีเมล",
     "password": "รหัสผ่าน",
     "confirm-password": "ยืนยันรหัสผ่าน",
     "forgot-password": "ลืมรหัสผ่านใช่หรือไม่?",
@@ -16,8 +16,8 @@
     "did-not-receive": "ไม่ได้รับรหัสใช่ไหม?",
 
     "sign-in-title": "เข้าสู่ระบบ",
-    "sign-in-description":"ยินดีต้อนรับสู่ M Authentication กรุณาเข้าสู่ระบบด้วยอีเมลและรหัสผ่านของคุณผ่านระบบ Single Sign-On (SSO) เพื่อเข้าถึงบัญชีและกระบวนการทำงานของคุณ:",
-    "sign-in-sign-up-link": "สมัครสมาชิกใหม่",
+    "sign-in-description":"ยินดีต้อนรับสู่ M - Authen 2.0 กรุณาเข้าสู่ระบบด้วยอีเมลและรหัสผ่านของคุณผ่านระบบ Single Sign-On (SSO) เพื่อเข้าถึงบัญชีและกระบวนการทำงานของคุณ:",
+    "sign-in-sign-up-link": "สร้างบัญชีใหม่",
 
     "forgot-password-title": "ลืมรหัสผ่าน",
     "forgot-password-description": "กรอกอีเมลของท่าน แล้วเราจะส่งข้อความรหัสยืนยันเพื่อรีเซ็ตรหัสผ่านของท่าน",
@@ -27,8 +27,8 @@
     "confirm-password-description-trailing": "กรุณากรอกรหัสเพื่อรีเซ็ตรหัสผ่านของคุณ",
     "confirm-password-placeholder": "รหัส",
 
-    "sign-up-title": "สมัครสมาชิก",
-    "sign-up-description": "หลังจากสมัครสมาชิคแล้ว ท่านสามารถเข้าสู่ระบบและเริ่มใช้งานบริการของเราได้ทันที",
+    "sign-up-title": "สร้างบัญชีใหม่",
+    "sign-up-description": "หลังจากสร้างบัญชีใหม่ ท่านสามารถเข้าสู่ระบบและเริ่มใช้งานบริการของเราได้ทันที",
     "already-have-account": "มีบัญชีอยู่แล้ว?",
     "dont-have-account": "ยังไม่มีบัญชีใช่ไหม?",
     "thank-you-for-using": "ขอบคุณที่ใช้บริการของเรา หากคุณมีคำถามหรือต้องการความช่วยเหลือเพิ่มเติม โปรดอย่าลังเลที่จะติดต่อเรา",
@@ -56,6 +56,7 @@
     "email-policy-invalid": "กรุณากรอกอีเมล",
     "email-policy-is-themall-or-emporiumthailand": "ในกรณีของที่อยู่อีเมล The Mall Group (TMG) กรุณาติดต่อ IT Helpdesk ที่หมายเลข 02-239-1355 หรือ ithelpdesk{atSignSymbol}themall.co.th เพื่อขอรับความช่วยเหลือ",
     "password-policy-required": "กรุณากรอกรหัสผ่าน",
+    "confirm-password-policy-required": "กรุณากรอกยืนยันรหัสผ่าน",
     "password-policy-lowercase": "รหัสผ่านต้องมีตัวอักษรพิมพ์เล็ก",
     "password-policy-uppercase": "รหัสผ่านต้องมีตัวอักษรพิมพ์ใหญ่",
     "password-policy-number": "รหัสผ่านต้องมีตัวเลข",

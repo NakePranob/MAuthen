@@ -16,7 +16,7 @@
     "did-not-receive": "Didn't you receive any {value}?",
 
     "sign-in-title": "Sign In",
-    "sign-in-description": "Welcome to M Authentication, sign-in with your email and password as a Single Sign-On (SSO) to access your account & workflows:",
+    "sign-in-description": "Welcome to M - Authen 2.0, sign in with your credential as a Single Sign-On (SSO) to access your account & workflows:",
     "sign-in-sign-up-link": "Sign Up",
 
     "forgot-password-title": "Forgot Password",
@@ -56,6 +56,7 @@
     "email-policy-invalid": "Please enter your email.",
     "email-policy-is-themall-or-emporiumthailand": "In case of The Mall Group (TMG) email address, please reach out to IT Helpdesk at 02-239-1355 or ithelpdesk{atSignSymbol}themall.co.th for support.",
     "password-policy-required": "Please enter your password.",
+    "confirm-password-policy-required": "Please enter your confirm password.",
     "password-policy-lowercase": "Password must contain a lower case letter",
     "password-policy-uppercase": "Password must contain an upper case letter",
     "password-policy-number": "Password must contain a numbe",
