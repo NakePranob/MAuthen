@@ -110,8 +110,9 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
                 {{ $t('sign-in-description') }}
             </p>
         </div>
+        <p>{{  $t('sign-in-description-2')  }}</p>
         <UForm :schema="schema" :state="state" class="space-y-4 w-full" @submit="onSubmit">
-            <TFormGroup name="email" label="For supplier or external, sign in with your email and password:">
+            <TFormGroup name="email">
                 <UInput v-model="state.email" size="xl" inputClass="p-4" :placeholder="$t('email')" />
             </TFormGroup>
             <TFormGroup name="password" class="relative">
@@ -147,10 +148,10 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
                     {{ $t('sign-in-sign-up-link') }}
                 </NuxtLink @click="auth.setPageView('')">
             </p>
-            <div class="px-8 w-full">
-                <UDivider label="OR" />
+            <div class="px-8 w-full my-4">
+                <UDivider :label="$t('or')" />
             </div>
-            <p class="w-full my-2">For internal, sign in with TMG Corporate IdP:</p>
+            <p class="w-full my-2">{{ $t('sign-in-description-3') }}</p>
             <NuxtLink to="https://tmgauth.themall.co.th/adfs/ls/?SAMLRequest=fVLLbsIwELz3KyLfnXcoWCSIFlEhpT3waKVekBsbcBXbqddBbb%2B%2BTgCpXLhYfszszM56PPmWtXfkBoRWOYr8EHlcVZoJtc%2FRZj3HQzQp7sZAZR03ZNrag1ryr5aD9aYA3FjHe9QKWsnNipujqPhmWeboYG0DJAgkdRSucOuw0K%2BKSo4bo5nfPfm0waA7DAWLI59K%2Bqudgb0SVvuVlkEvHQjWGA6NU%2BLImzl5oajtPV%2BUrNz3BV0pSevacd02oGwHQQ0B8hazHG1HuzQLOatwRqMhTpM0wx%2Bj%2BwQnbJRmPKnCQcgcFKDlCwWWKpujOIxTHMU4Gq2jkIQJiRM%2FHaTvyHu95BZ3ubkkFZBTUjlqjSKaggDSNQzEVmQ1fS6JgxLXvdWVrlFxCpb0gsabayOpvc3tbgTDux5KuLLC%2Flxp36bTy9BQ0cFOcZNz3gQacj2P7ax8e3n4fCrFOPhvtTgfr79E8Qc%3D&RelayState=H4sIAAAAAAAAAFVQy07DMBD8F5_rNE6c542HVKAtiKSIVggh27ETk8ROG1OVIv6dDRIHLt7ZnZ3ZXX8hhnLEBjzaD9dINjpM3q5Xz_eX74uVRjPEgd6sF7jUpu4khNrgBwOEACI1ezpmR3F0e5USYtpjq9um4S3wFfCNc8OYz-c9Hzxw71nXecICnPdsGmdwZ2s9uUnodraVE1aAy4v1CmCN8hcEOt1BYgdpdAVgaKyRUzxYpTuJXmeoAc3jklSbcvF0VwCnJxPej1dstX0sin0pdrur-naf8Z2KXHwjyk_j6vPDKV0SSgQo3idFEMUAW4BbXhan-nl9sYRCB4W_lT9GeRh_X8N6iWGJypso7_8veqxnZ2uErY12Fs7uwadHOUlCGvtB7IdwAMoV60Y5QwcYIGkgVcIpVjROMeUyxmmYKMxSQdMgy4hKGHg4aH3LFI18WQkcMQK9IY0wz5IQh1VGIxkKP_Yr9P0DZCnO1N4BAAA.H4sIAAAAAAAAAAEgAN__UDfo9rUkwNPvg8zlkfcFt_qAFnYoornDTg2LuERwNT2AbC4mIAAAAA.3" class="w-full">
                 <UButton type="submit" block size="xl" :padded="false" :ui="{ font: '!text-base' }" class=" text-primary-app dark:text-primary-app-400 font-bold py-4 bg-white/0 dark:bg-[#141418]
                 outline-1 outline-primary-app dark:outline-primary-app-400 

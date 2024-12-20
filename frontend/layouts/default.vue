@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full dark:bg-[#141418] text-[#231F20] dark:text-slate-50">
+    <div class="h-full dark:bg-[#141418] text-[#231F20] dark:text-slate-50 max-w-screen">
         <div class="grid grid-cols-10">
             <div class="fixed top-4 items-center right-4 flex gap-2">
                 <!-- Theme -->
