@@ -1,4 +1,5 @@
 {
+    "or": "หรือ",
     "switch-to-ligth": "เปลี่ยนธีมเป็นสว่าง",
     "switch-to-system": "เปลี่ยนธีมตามอุปกรณ์",
     "switch-to-dark": "เปลี่ยนธีมเป็นมืด",
@@ -16,22 +17,24 @@
     "did-not-receive": "ไม่ได้รับรหัสใช่ไหม?",
 
     "sign-in-title": "เข้าสู่ระบบ",
-    "sign-in-description":"ยินดีต้อนรับสู่ M - Authen 2.0 กรุณาเข้าสู่ระบบด้วยอีเมลและรหัสผ่านของคุณผ่านระบบ Single Sign-On (SSO) เพื่อเข้าถึงบัญชีและกระบวนการทำงานของคุณ:",
+    "sign-in-description":"ยินดีต้อนรับสู่ M - Authen 2.0 กรุณาเข้าสู่ระบบด้วยอีเมลและรหัสผ่านของท่านผ่านระบบ Single Sign-On (SSO) เพื่อเข้าถึงบัญชีและกระบวนการทำงานของท่าน:",
+    "sign-in-description-2": "สำหรับคู่ค้าและผู้ใช้ภายนอก ให้ลงชื่อเข้าใช้งานด้วยอีเมลและรหัสผ่านของท่าน:",
+    "sign-in-description-3": "สำหรับผู้ใช้ภายใน ลงชื่อเข้าใช้ด้วย TMG Corporate IdP:",
     "sign-in-sign-up-link": "สร้างบัญชีใหม่",
 
     "forgot-password-title": "ลืมรหัสผ่าน",
-    "forgot-password-description": "กรอกอีเมลของท่าน แล้วเราจะส่งข้อความรหัสยืนยันเพื่อรีเซ็ตรหัสผ่านของท่าน",
+    "forgot-password-description": "กรุณากรอกอีเมลของท่าน ระบบจะทำการส่งรหัสยืนยันตัวตนผ่านอีเมลของท่านเพื่อรีเซ็ตรหัสผ่านใหม่",
 
     "confirm-password-title": "กำหนดรหัสผ่านใหม่",
     "confirm-password-description-leading": "เราได้ส่งรหัสรีเซ็ตรหัสผ่านทางอีเมล",
-    "confirm-password-description-trailing": "กรุณากรอกรหัสเพื่อรีเซ็ตรหัสผ่านของคุณ",
+    "confirm-password-description-trailing": "กรุณากรอกรหัสเพื่อรีเซ็ตรหัสผ่านของท่าน",
     "confirm-password-placeholder": "รหัส",
 
     "sign-up-title": "สร้างบัญชีใหม่",
-    "sign-up-description": "หลังจากสร้างบัญชีใหม่ ท่านสามารถเข้าสู่ระบบและเริ่มใช้งานบริการของเราได้ทันที",
+    "sign-up-description": "หลังจากสร้างบัญชีใหม่ ท่านสามารถเข้าสู่ระบบและเริ่มต้นใช้งานบริการของเราได้ทันที",
     "already-have-account": "มีบัญชีอยู่แล้ว?",
     "dont-have-account": "ยังไม่มีบัญชีใช่ไหม?",
-    "thank-you-for-using": "ขอบคุณที่ใช้บริการของเรา หากคุณมีคำถามหรือต้องการความช่วยเหลือเพิ่มเติม โปรดอย่าลังเลที่จะติดต่อเรา",
+    "thank-you-for-using": "ขอบคุณที่ใช้บริการของเรา หากท่านมีคำถามหรือต้องการความช่วยเหลือเพิ่มเติม โปรดอย่าลังเลที่จะติดต่อเรา",
 
     "otp-verification-title": "ยืนยัน OTP",
     "otp-verification-description-email": "รหัส (OTP) ของท่านถูกส่งทางอีเมลไปที่",
@@ -47,7 +50,7 @@
     "code-verification-placeholder": "รหัส",
 
     "change-password-title": "เปลี่ยนรหัสผ่านของท่าน",
-    "change-password-description": "คุณสามารถเปลี่ยนรหัสผ่านได้ด้วยเหตุผลด้านความปลอดภัยหรือรีเซ็ตได้หากคุณลืม",
+    "change-password-description": "ท่านสามารถเปลี่ยนรหัสผ่านได้ด้วยเหตุผลด้านความปลอดภัยหรือรีเซ็ตได้หากท่านลืม",
 
     "otp-policy-required": "กรุณากรอกรหัส",
     "otp-policy-length": "รหัสต้องมีความยาวอย่างน้อย 8 ตัวอักษร",
@@ -69,9 +72,9 @@
     "noti-success-button": "ข้าม",
     "noti-error-button": "ลองอีกครั้ง",
     "noti-success-sign-up-title": "สมัครสมาชิกสำเร็จ",
-    "noti-success-sign-up-description": "อีเมลของคุณได้รับการยืนยันเรียบร้อย และคุณได้เข้าสู่ระบบแล้ว",
+    "noti-success-sign-up-description": "อีเมลของท่านได้รับการยืนยันเรียบร้อย และท่านได้เข้าสู่ระบบแล้ว",
     "noti-success-password-change-title": "เปลี่ยนรหัสผ่าน",
-    "noti-success-password-change-description": "รหัสผ่านของคุณได้รับการเปลี่ยนแปลงเรียบร้อยแล้ว",
+    "noti-success-password-change-description": "รหัสผ่านของท่านได้รับการเปลี่ยนแปลงเรียบร้อยแล้ว",
     "noti-error-password-change-title": "เปลี่ยนรหัสผ่านล้มเหลว",
     "noti-error-password-change-description": "ขออภัย เกิดปัญหาชั่วคราวกับระบบ กรุณาลองใหม่อีกครั้งในภายหลัง"
 }

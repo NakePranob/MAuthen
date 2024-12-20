@@ -1,4 +1,5 @@
 {
+    "or": "or",
     "switch-to-ligth": "Switch to Ligth",
     "switch-to-system": "Switch to System",
     "switch-to-dark": "Switch to Dark",
@@ -17,6 +18,8 @@
 
     "sign-in-title": "Sign In",
     "sign-in-description": "Welcome to M - Authen 2.0, sign in with your credential as a Single Sign-On (SSO) to access your account & workflows:",
+    "sign-in-description-2": "For supplier or external, sign in with your email and password:",
+    "sign-in-description-3": "For internal, sign in with TMG Corporate IdP:",
     "sign-in-sign-up-link": "Sign Up",
 
     "forgot-password-title": "Forgot Password",
