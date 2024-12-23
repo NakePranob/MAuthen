@@ -4,7 +4,7 @@ export default defineAppConfig({
       gray: 'zinc',
       notifications: {
         // Show toasts at the top right of the screen
-        position: 'xl:top-[unset] xl:bottom-0 xl:right-0 right-0 top-0 bottom-[unset]'
+        position: '-me-4 -right-4 -top-2 bottom-[unset]'
       },
       input: {
         default: {

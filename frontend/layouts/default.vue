@@ -6,20 +6,16 @@
                 <button class="flex justify-center items-center me-2">
                     <template v-if="$colorMode.value === 'dark'">
                         <UTooltip :text="$t('switch-to-ligth')" :open-delay="300">
-                            <UIcon name="i-heroicons-moon-solid"  class="rounded-full sm:w-8 sm:h-8 h-8 w-8"
-                                @click.stop="() => {
-                                    $colorMode.preference = 'light'
-                                }" 
-                            />
+                            <UIcon name="i-heroicons-moon-solid" class="rounded-full sm:w-8 sm:h-8 h-8 w-8" @click.stop="() => {
+                                $colorMode.preference = 'light'
+                            }" />
                         </UTooltip>
                     </template>
                     <template v-else-if="$colorMode.value === 'light'">
                         <UTooltip :text="$t('switch-to-system')" :open-delay="300">
-                            <UIcon name="i-heroicons-sun-solid" class="rounded-full sm:w-8 sm:h-8 h-8 w-8"
-                                @click.stop="() => {
-                                    $colorMode.preference = 'system'
-                                }" 
-                            />
+                            <UIcon name="i-heroicons-sun-solid" class="rounded-full sm:w-8 sm:h-8 h-8 w-8" @click.stop="() => {
+                                $colorMode.preference = 'system'
+                            }" />
                         </UTooltip>
                     </template>
                     <template v-else>
@@ -27,8 +23,7 @@
                             <UIcon name="i-heroicons-computer-desktop-solid" class="rounded-full sm:w-8 sm:h-8 h-8 w-8"
                                 @click.stop="() => {
                                     $colorMode.preference = 'dark'
-                                }" 
-                            />
+                                }" />
                         </UTooltip>
                     </template>
                 </button>
@@ -63,8 +58,16 @@
                 class="col-span-10 lg:col-span-4 h-screen overflow-y-auto flex flex-col items-center px-4">
                 <slot />
             </div>
+            <UNotifications>
+                <template #title="{ title }">
+                    <span class="font-base" v-html="title" />
+                </template>
+
+                <template #description="{ description }">
+                    <span class="font-base" v-html="description" />
+                </template>
+            </UNotifications>
         </div>
-        <UNotifications />
     </div>
 </template>
 
@@ -94,7 +97,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-div {
-    font-family: "Noto Sans Thai", serif;
+*, .font-base {
+    font-family: "Noto Sans Thai", serif !important;
 }
 </style>

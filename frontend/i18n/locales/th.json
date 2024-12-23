@@ -13,6 +13,7 @@
     "verify-button": "ยืนยัน",
     "resend-otp-in": "สามารถส่งอีกครั้งใน",
     "resend-otp": "คลิกเพื่อขอรหัสใหม่",
+    "resend-code-in": "สามารถส่งอีกครั้งใน",
     "resend-code": "คลิกเพื่อขอรหัสใหม่",
     "did-not-receive": "ไม่ได้รับรหัสใช่ไหม?",
 
@@ -21,9 +22,19 @@
     "sign-in-description-2": "สำหรับคู่ค้าและผู้ใช้ภายนอก ให้ลงชื่อเข้าใช้งานด้วยอีเมลและรหัสผ่านของท่าน:",
     "sign-in-description-3": "สำหรับผู้ใช้ภายใน ลงชื่อเข้าใช้ด้วย TMG Corporate IdP:",
     "sign-in-sign-up-link": "สร้างบัญชีใหม่",
+    "sign-in-noti-not-authorized-exception": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
+    "noti-missing-required-exception": "ข้อมูลที่จำเป็นไม่ครบ",
+    "noti-invalid-email-exception": "รูปแบบอีเมลไม่ถูกต้อง",
+    "noti-invalid-csrf-token-exception": "โทเค็น CSRF ไม่ถูกต้อง",
+    "noti-authentication-failed": "มีบางอย่างผิดพลาดยืนยันตัวตนล้มเหลว",
+    "noti-new-password-required-exception": "กรุณากำหนดรหัสผ่านใหม่",
+    "noti-user-lambda-validation-exception": "OTP ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง",
+    "noti-resent-otp": "รหัสยืนยันใหม่ถูกส่งไปยังอีเมลของท่านเรียบร้อยแล้ว",
+    "noti-resent-code": "รหัสยืนยันใหม่ถูกส่งไปยังอีเมลของท่านเรียบร้อยแล้ว",
 
     "forgot-password-title": "ลืมรหัสผ่าน",
     "forgot-password-description": "กรุณากรอกอีเมลของท่าน ระบบจะทำการส่งรหัสยืนยันตัวตนผ่านอีเมลของท่านเพื่อรีเซ็ตรหัสผ่านใหม่",
+    "noti-invalid-code-exception": "รหัสไม่ถูกต้อง",
 
     "confirm-password-title": "กำหนดรหัสผ่านใหม่",
     "confirm-password-description-leading": "เราได้ส่งรหัสรีเซ็ตรหัสผ่านทางอีเมล",
@@ -35,6 +46,7 @@
     "already-have-account": "มีบัญชีอยู่แล้ว?",
     "dont-have-account": "ยังไม่มีบัญชีใช่ไหม?",
     "thank-you-for-using": "ขอบคุณที่ใช้บริการของเรา หากท่านมีคำถามหรือต้องการความช่วยเหลือเพิ่มเติม โปรดอย่าลังเลที่จะติดต่อเรา",
+    "noti-user-already-exists-exception": "อีเมลนี้ลงทะเบียนอยู่แล้ว กรุณาเข้าสู่ระบบแทน",
 
     "otp-verification-title": "ยืนยัน OTP",
     "otp-verification-description-email": "รหัส (OTP) ของท่านถูกส่งทางอีเมลไปที่",
@@ -43,6 +55,7 @@
     "otp-verification-label-center": "(Ref code: csUkC0)",
     "otp-verification-label-trailing": "เพื่อตรวจสอบ",
     "otp-verification-placeholder": "รหัส",
+    "noti-invalid-otp": "OTP ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง",
 
     "code-verification-title": "ยืนยันรหัส",
     "code-verification-description":"การยืนยันรหัสได้ถูกส่งทางอีเมลไปที่",

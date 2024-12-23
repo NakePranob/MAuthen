@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from '#ui/types'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n();
 const auth = useAuthStore();
 const formElement = ref();
 const toast = useToast();
@@ -58,7 +61,12 @@ async function onSubmit(event: FormSubmitEvent<any>) {
 
         if (error.value) {
             console.error("Error message from server:", error || "Unknown error occurred");
-            toast.add({ title: error.value?.data.message });
+            if (error.value.data.code === 'MissingRequiredFieldsException') {
+                toast.add({ title: t('noti-missing-required-exception'), icon: "i-heroicons-x-circle" });
+            } else {
+                toast.add({ title: error.value?.data.message || 'Unknown error occurred', icon: "i-heroicons-x-circle" });
+            }
+            
             return;
         }
 

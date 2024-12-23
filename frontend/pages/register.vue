@@ -59,7 +59,7 @@ onMounted(async () => {
 
 <template>
     <div v-if="!client_id">
-        Required String parameter 'client_id' is not present
+        <ErrorPage code="Oops!" content="Required String parameter 'client_id' is not present"/>
     </div>
     <div v-else class="max-w-[420px] w-full">
         <SignUp v-if="auth.pageView != 'codeVerification' && !auth.notiSuccess.isOpen" />

@@ -3,7 +3,9 @@ import { z } from 'zod';
 import type { FormSubmitEvent } from '#ui/types';
 import { useAuthStore } from '@/stores/auth';
 import Circular from '@/components/Circular.vue';
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n();
 const toast = useToast();
 const auth = useAuthStore();
 const client_id = ref('');
@@ -27,7 +29,7 @@ const getElementHeight = () => {
 
 const schema = z.object({
     email: z.string({ message: "email-policy-required" }).email('email-policy-invalid'),
-    password: z.string().min(1, 'password-policy-required')
+    password: z.string().min(auth.passwordPolicy.MinimumLength || 1, 'password-policy-required')
 })
 
 type Schema = z.output<typeof schema>
@@ -57,16 +59,18 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
 
         if (error.value) {
             console.error('Error message from server:', error || 'Unknown error occurred');
-            if (error.value.data.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
-                toast.add({ title: error.value?.data.message });
-                auth.setChangPassword({
-                    session: error.value.data.Session,
-                    email: error.value.data.ChallengeParameters.userAttributes.email,
-                });
-                auth.setPageView('changePassword');
+            if (error.value.data.code === 'NotAuthorizedException') {
+                toast.add({ title: t('sign-in-noti-not-authorized-exception'), icon: "i-heroicons-x-circle" });
+            } else if (error.value.data.code === 'MissingRequiredFieldsException') {
+                toast.add({ title: t('noti-missing-required-exception'), icon: "i-heroicons-x-circle" });
+            } else if (error.value.data.code === 'InvalidEmailException') {
+                toast.add({ title: t('noti-invalid-email-exception'), icon: "i-heroicons-x-circle" });
+            } else if (error.value.data.code === 'InvalidCSRFTokenException') {
+                toast.add({ title: t('noti-invalid-csrf-token-exception'), icon: "i-heroicons-x-circle" });
+            } else if (error.value.data.code === 'AuthorizedFail') {
+                toast.add({ title: t('noti-authentication-failed'), icon: "i-heroicons-x-circle" });
             } else {
-                toast.add({ title: error.value?.data.message });
-                isLoading.value = false;
+                toast.add({ title: error.value.data.message || 'Unknown error occurred', icon: "i-heroicons-x-circle" });
             }
             return;
         }

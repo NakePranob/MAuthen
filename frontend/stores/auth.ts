@@ -1,7 +1,16 @@
 import { defineStore } from 'pinia';
+import type { 
+    AuthState, 
+    OTPType, 
+    CodeVerificationType, 
+    ForgotPasswordType, 
+    ChangPasswordType, 
+    NotiSuccessType, 
+    PasswordPolicyType 
+} from '~/types/auth-stores';
 
 export const useAuthStore = defineStore('auth', {
-    state: () => {
+    state: (): AuthState => {
         return {
             formElementHight: 0,
             uri: '',
@@ -57,56 +66,25 @@ export const useAuthStore = defineStore('auth', {
         },
         setPageView(view: string) {
             this.pageView = view;
-            console.log("setPageView:", view)
         },
-        setNotiSuccess(obj: {
-            isOpen: boolean,
-            state: string,
-            url: string,
-            message: string,
-            description: string
-        }) {
+        setNotiSuccess(obj: NotiSuccessType) {
             this.notiSuccess = obj;
             console.log(this.notiSuccess);
         },
-        setOTP(obj: {
-            email: string,
-            password: string,
-            challengeName: string,
-            session: string
-        }) {
+        setOTP(obj: OTPType) {
             this.otp = obj;
         },
-        setCodeVerification(obj: {
-            email: string,
-            password: string,
-            sessionId: string,
-            code: string
-        }) {
+        setCodeVerification(obj: CodeVerificationType) {
             this.codeVerification = obj;
         },
-        setForgotPassword(obj: {
-            email: string,
-            sessionId: string
-        }) {
+        setForgotPassword(obj: ForgotPasswordType) {
             this.forgotPassword = obj;
         },
-        setChangPassword(obj: {
-            session: string,
-            email: string
-        }) {
+        setChangPassword(obj: ChangPasswordType) {
             this.changPassword = obj;
         },
-        setPasswordPolicy(obj: {
-            MinimumLength: number,
-            RequireUppercase: boolean,
-            RequireLowercase: boolean,
-            RequireSymbols: boolean,
-            RequireNumbers: boolean,
-        } | null | undefined) {
-            if (obj) {
-                this.passwordPolicy = obj;
-            }
+        setPasswordPolicy(obj: PasswordPolicyType) {
+            this.passwordPolicy = obj;
         },
         setPasswordPolicyHeight(height: number) {
             this.passwordPolicyHeight = height;

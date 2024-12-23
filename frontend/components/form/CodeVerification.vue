@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { z } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/stores/auth';import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n();
 const auth = useAuthStore();
 const toast = useToast();
 const formElement = ref();
@@ -47,7 +48,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
         if (error.value) {
             console.error("Error message from server:", error || "Unknown error occurred");
-            toast.add({ title: error.value.data.message });
+            if (error.value?.data.code === "InvalidCodeException") {
+                toast.add({ title: t('noti-invalid-code-exception'), icon: "i-heroicons-x-circle" });
+            } else {
+                toast.add({ title: error.value?.data.message || 'Unknown error occurred', icon: "i-heroicons-x-circle" });
+            }
             return;
         }
 

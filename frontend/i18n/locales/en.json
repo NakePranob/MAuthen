@@ -13,6 +13,7 @@
     "verify-button": "Verify",
     "resend-otp-in": "Resend OTP in",
     "resend-otp": "Resend OTP",
+    "resend-code-in": "Resend Code in",
     "resend-code": "Resend Code",
     "did-not-receive": "Didn't you receive any {value}?",
 
@@ -21,9 +22,19 @@
     "sign-in-description-2": "For supplier or external, sign in with your email and password:",
     "sign-in-description-3": "For internal, sign in with TMG Corporate IdP:",
     "sign-in-sign-up-link": "Sign Up",
+    "sign-in-noti-not-authorized-exception": "Incorrect email or password.",
+    "noti-missing-required-exception": "Missing required fields",
+    "noti-invalid-email-exception": "Invalid email format",
+    "noti-invalid-csrf-token-exception": "Invalid CSRF token",
+    "noti-authentication-failed": "Authentication Failed",
+    "noti-new-password-required-exception": "New password is required",
+    "noti-user-lambda-validation-exception": "Invalid OTP",
+    "noti-resent-otp": "New verification OTP sent to your email",
+    "noti-resent-code": "New verification Code sent to your email",
 
     "forgot-password-title": "Forgot Password",
     "forgot-password-description": "Enter your Email below and we will send a message to reset your password",
+    "noti-invalid-code-exception": "Invalid Code.",
 
     "confirm-password-title": "Reset Your Password",
     "confirm-password-description-leading": "We have sent a password reset code by email to",
@@ -35,6 +46,7 @@
     "already-have-account": "Already have an account?",
     "dont-have-account": "Don't have an account?",
     "thank-you-for-using": "Thank you for using our service. If you have any questions or need further assistance, please do not hesitate to contact us.",
+    "noti-user-already-exists-exception": "This email is already registered. Please Sign In instead.",
 
     "otp-verification-title": "OTP Verification",
     "otp-verification-description-email": "One-Time Password (OTP) has been sent via email to",
@@ -43,6 +55,7 @@
     "otp-verification-label-center": "(Ref code: csUkC0)",
     "otp-verification-label-trailing": "below to verify it",
     "otp-verification-placeholder": "Code",
+    "noti-invalid-otp": "Invalid OTP.",
 
     "code-verification-title": "Code Verification",
     "code-verification-description":"Code Verification has been sent via email to",

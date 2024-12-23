@@ -6,6 +6,9 @@ const toast = useToast();
 const formElement = ref();
 const email = ref();
 const isLoading = ref(false);
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n();
 
 const validatePassword = ref<{
     path: string,
@@ -42,6 +45,10 @@ const validate = (state: any): FormError[] => {
     return errors
 }
 
+onUnmounted(() => {
+    stopCountdown();
+});
+
 const state = reactive({
     code: undefined,
     password: undefined,
@@ -70,14 +77,11 @@ async function onSubmit(event: FormSubmitEvent<any>) {
 
         if (error.value) {
             console.error("Error message from server:", error || "Unknown error occurred");
-            auth.setPageView('');
-            auth.setNotiSuccess({
-                isOpen: true,
-                state: 'error',
-                url: `http://localhost:3000/login${auth.uri}`,
-                message: 'noti-error-password-change-title',
-                description: 'noti-error-password-change-description',
-            });
+            if (error.value?.data.code === "InvalidCodeException") {
+                toast.add({ title: t('noti-invalid-code-exception'), icon: "i-heroicons-x-circle" });
+            } else {
+                toast.add({ title: 'An unexpected error occurred', icon: "i-heroicons-x-circle" });
+            }
             return;
         }
 
@@ -86,7 +90,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
             auth.setNotiSuccess({
                 isOpen: true,
                 state: 'success',
-                url: `http://localhost:3000/forgot-password${auth.uri}`,
+                url: `http://localhost:3000/login${auth.uri}`,
                 message: 'noti-success-password-change-title',
                 description: 'noti-success-password-change-description',
             });
@@ -99,9 +103,25 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     }
 }
 
+const countdown = reactive({
+    timeLeft: 10 * 60, // 10 minutes (600 seconds)
+    isFinished: false, // เพิ่ม state เพื่อตรวจสอบว่าการนับสิ้นสุดหรือไม่
+});
+
+const formattedCountdown = computed(() => {
+    const minutes = Math.floor(countdown.timeLeft / 60);
+    const seconds = countdown.timeLeft % 60;
+    return `${String(minutes).padStart(2, '0')} : ${String(seconds).padStart(2, '0')}`;
+});
+
+let countdownInterval: ReturnType<typeof setInterval> | null = null;
+
 onMounted(() => {
     email.value = maskEmail(auth.forgotPassword.email);
-    getElementHeight();
+    nextTick(() => {
+        startCountdown();
+        getElementHeight();
+    });
 });
 
 const getElementHeight = () => {
@@ -111,6 +131,62 @@ const getElementHeight = () => {
         auth.setFormElementHight(height);
     }
 };
+
+function startCountdown() {
+    if (countdownInterval) return;
+    countdownInterval = setInterval(() => {
+        if (countdown.timeLeft > 0) {
+            countdown.timeLeft -= 1;
+        } else {
+            countdown.isFinished = true; // ตั้งค่าเป็น true เมื่อเวลาสิ้นสุด
+            stopCountdown();
+        }
+    }, 1000);
+}
+
+function stopCountdown() {
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
+}
+
+async function resendCode() {
+    if (isLoading.value) return;
+    isLoading.value = true;
+    
+    try {
+        const { data, error } = await useFetch<{
+            message: string;
+            sessionId: string;
+        }>(`http://localhost:3002/api/v1/auth/forgot-password${auth.uri}`, {
+            method: 'POST',
+            body: {
+                username: auth.forgotPassword.email,
+            },
+            credentials: 'include',
+        });
+
+        if (error.value) {
+            console.error("Error message from server:", error || "Unknown error occurred");
+            toast.add({ title: error.value?.data.message });
+            return;
+        }
+
+        if (data.value) {
+            auth.setForgotPassword({
+                email: auth.forgotPassword.email,
+                sessionId: data.value.sessionId
+            });
+            toast.add({ title: t('noti-resent-code'), color:"green", icon:"i-heroicons-check-circle" });
+        }
+    } catch (error) {
+        console.error('Unexpected error:', error);
+        toast.add({ title: 'An unexpected error occurred' });
+    } finally {
+        isLoading.value = false;
+    }
+}
 
 </script>
 
@@ -255,14 +331,21 @@ const getElementHeight = () => {
                 </UButton>
             </div>
         </UForm>
-        <div class="mt-8 flex flex-col items-center justify-center gap-1 text-base">
-            <span class="text-base ">
-                {{ $t('did-not-receive', { value: 'Code' }) }}
-                <button
-                    class="text-primary-app dark:text-primary-app-400 font-bold hover:opacity-70 transition-all duration-300 ease-in-out">
-                    {{ $t('resend-code') }}
-                </button>
-            </span>
+        <div class="mt-4 flex flex-col items-center justify-center text-base">
+            <div class="flex-1 flex flex-col items-center justify-center gap-2">
+                <span>{{ $t('did-not-receive', { value: 'OTP' }) }}</span>
+                <template v-if="!countdown.isFinished">
+                    <b class="text-primary-app dark:text-primary-app-400 font-bold">
+                        {{ $t('resend-code-in') }} {{ formattedCountdown }}
+                    </b>
+                </template>
+                <template v-else>
+                    <b @click="resendCode" class="text-primary-app hover:scale-105 cursor-pointer 
+                    transition-all duration-150 ease-in-out dark:text-primary-app-400 font-bold">
+                        {{ $t('resend-code') }}
+                    </b>
+                </template>
+            </div>
             <NuxtLink @click="auth.setPageView('')" :to="`/login${auth.uri}`"
                 class="font-bold mt-6 flex gap-2 hover:gap-4 transition-all duration-300 ease-in-out">
                 <UIcon name="i-heroicons-arrow-left" class="w-5 h-5" /> {{ $t('back-to-sign-in') }}

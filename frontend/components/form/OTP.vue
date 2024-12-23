@@ -3,13 +3,16 @@ import { z } from 'zod';
 import { reactive, computed, onMounted, onUnmounted } from 'vue';
 import type { FormSubmitEvent } from '#ui/types';
 import { useAuthStore } from '@/stores/auth';
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n();
 const auth = useAuthStore();
+const xsrfToken = useCookie('XSRFTOKEN');
 const toast = useToast();
 const formElement = ref<HTMLFormElement | null>(null);
 const client_id = ref('');
 const redirectUri = ref('');
-const email = ref('');
+const email = ref(''); ''
 const isLoading = ref(false);
 
 function maskEmail(email: string) {
@@ -56,14 +59,22 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         if (error.value) {
             console.error('Error message from server:', error || 'Unknown error occurred');
             if (error.value.data.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
-                toast.add({ title: error.value?.data.message });
+                toast.add({ title: t('noti-new-password-required-exception'), icon: "i-heroicons-x-circle" });
                 auth.setChangPassword({
                     session: error.value.data.Session,
                     email: error.value.data.ChallengeParameters.userAttributes.email,
                 });
                 auth.setPageView('changePassword');
             } else {
-                toast.add({ title: error.value?.data.message });
+                if (error.value.data.code === 'MissingRequiredFieldsException') {
+                    toast.add({ title: t('noti-missing-required-exception'), icon: "i-heroicons-x-circle" });
+                } else if (error.value.data.code === 'NotAuthorizedException') {
+                    toast.add({ title: t('noti-invalid-otp'), icon: "i-heroicons-x-circle" });
+                } else if (error.value.data.code === 'UserLambdaValidationException') {
+                    toast.add({ title: t('noti-user-lambda-validation-exception'), icon: "i-heroicons-x-circle" });
+                } else {
+                    toast.add({ title: error.value?.data.message, icon: "i-heroicons-x-circle" });
+                }
             }
             return;
         }
@@ -119,10 +130,63 @@ onUnmounted(() => {
     stopCountdown();
 });
 
-function resetCountdown() {
-    countdown.timeLeft = 10 * 60; // รีเซ็ตเวลาเป็น 10 นาที
-    countdown.isFinished = false; // รีเซ็ตสถานะการนับ
-    startCountdown(); // เริ่มนับใหม่
+async function resendOTP() {
+    countdown.timeLeft = 10 * 60;
+    countdown.isFinished = false;
+    startCountdown();
+
+    if (isLoading.value) return;
+    isLoading.value = true;
+
+    try {
+        const { data, error } = await useFetch<{
+            challengeName: string,
+            session: string,
+        }>(`http://localhost:3002/api/v1/auth/login${auth.uri}`, {
+            method: 'POST',
+            credentials: 'include',
+            body: {
+                username: auth.otp.email,
+                password: auth.otp.password,
+                _csrf: xsrfToken.value || '',
+            },
+        });
+
+        if (error.value) {
+            console.error('Error message from server:', error || 'Unknown error occurred');
+            if (error.value.data.code === 'NotAuthorizedException') {
+                toast.add({ title: t('sign-in-noti-not-authorized-exception'), icon: "i-heroicons-x-circle" });
+            } else if (error.value.data.code === 'MissingRequiredFieldsException') {
+                toast.add({ title: t('noti-missing-required-exception'), icon: "i-heroicons-x-circle" });
+            } else if (error.value.data.code === 'InvalidEmailException') {
+                toast.add({ title: t('noti-invalid-email-exception'), icon: "i-heroicons-x-circle" });
+            } else if (error.value.data.code === 'InvalidCSRFTokenException') {
+                toast.add({ title: t('noti-invalid-csrf-token-exception'), icon: "i-heroicons-x-circle" });
+            } else if (error.value.data.code === 'AuthorizedFail') {
+                toast.add({ title: t('noti-authentication-failed'), icon: "i-heroicons-x-circle" });
+            } else {
+                toast.add({ title: error.value.data.message || 'Unknown error occurred', icon: "i-heroicons-x-circle" });
+            }
+            return;
+        }
+
+        if (data.value) {
+            if (data.value.challengeName === 'CUSTOM_CHALLENGE') {
+                auth.setOTP({
+                    email: auth.otp.email,
+                    password: auth.otp.password,
+                    session: data.value.session,
+                    challengeName: data.value.challengeName,
+                });
+                toast.add({ title: t('noti-resent-otp'), color:"green", icon:"i-heroicons-check-circle" });
+            }
+        }
+    } catch (err) {
+        console.error('Unexpected error:', err);
+        toast.add({ title: 'An unexpected error occurred' });
+    } finally {
+        isLoading.value = false;
+    }
 }
 
 function startCountdown() {
@@ -175,7 +239,7 @@ function stopCountdown() {
                     <template v-if="isLoading" #leading>
                         <Circular size="16" color="white" />
                     </template>
-                    Verify
+                    {{ $t('verify-button') }}
                 </UButton>
             </TFormGroup>
         </UForm>
@@ -188,7 +252,7 @@ function stopCountdown() {
                     </b>
                 </template>
                 <template v-else>
-                    <b @click="resetCountdown" class="text-primary-app hover:scale-105 cursor-pointer 
+                    <b @click="resendOTP" class="text-primary-app hover:scale-105 cursor-pointer 
                     transition-all duration-150 ease-in-out dark:text-primary-app-400 font-bold">
                         {{ $t('resend-otp') }}
                     </b>
