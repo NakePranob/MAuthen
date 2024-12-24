@@ -4,7 +4,7 @@ import type { FormSubmitEvent } from '#ui/types';
 import { useAuthStore } from '@/stores/auth';
 import Circular from '@/components/Circular.vue';
 import { useI18n } from 'vue-i18n'
-
+const runtimeConfig = useRuntimeConfig();
 const { t } = useI18n();
 const toast = useToast();
 const auth = useAuthStore();
@@ -47,7 +47,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
         const { data, error } = await useFetch<{
             challengeName: string,
             session: string,
-        }>(`http://localhost:3002/api/v1/auth/login${auth.uri}`, {
+        }>(`${runtimeConfig.public.apiBase}/api/v1/auth/login${auth.uri}`, {
             method: 'POST',
             credentials: 'include',
             body: {
@@ -70,7 +70,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
             } else if (error.value.data.code === 'AuthorizedFail') {
                 toast.add({ title: t('noti-authentication-failed'), icon: "i-heroicons-x-circle" });
             } else {
-                toast.add({ title: error.value.data.message || 'Unknown error occurred', icon: "i-heroicons-x-circle" });
+                toast.add({ title: t('noti-unknown-exception'), icon: "i-heroicons-x-circle" });
             }
             return;
         }

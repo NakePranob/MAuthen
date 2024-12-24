@@ -2,7 +2,8 @@
 import { z } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
 import { useAuthStore } from '@/stores/auth'
-
+const { t } = useI18n();
+const runtimeConfig = useRuntimeConfig();
 const auth = useAuthStore();
 const toast = useToast();
 const formElement = ref();
@@ -34,7 +35,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         const { data, error } = await useFetch<{
             message: string;
             sessionId: string;
-        }>(`http://localhost:3002/api/v1/auth/forgot-password${auth.uri}`, {
+        }>(`${runtimeConfig.public.apiBase}/api/v1/auth/forgot-password${auth.uri}`, {
             method: 'POST',
             body: {
                 username: event.data.email,
@@ -44,7 +45,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
         if (error.value) {
             console.error("Error message from server:", error || "Unknown error occurred");
-            toast.add({ title: error.value?.data.message });
+            toast.add({ title: t('noti-unknown-exception'), icon: "i-heroicons-x-circle" });
             return;
         }
 

@@ -4,6 +4,7 @@ import ForgotPassword from '@/components/form/ForgotPassword.vue';
 import FormNoti from '@/components/form/FormNoti.vue';
 import ConfirmPassword from '@/components/form/ConfirmPassword.vue';
 import { useRoute } from 'vue-router';
+const runtimeConfig = useRuntimeConfig();
 
 const route = useRoute();
 const queryParams = route.query;
@@ -31,7 +32,7 @@ onMounted(async () => {
                 RequireNumbers: boolean;
                 TemporaryPasswordValidityDays: number;
             };
-        }>('http://localhost:3002/api/v1/auth/passwordpolicy');
+        }>(`${runtimeConfig.public.apiBase}/api/v1/auth/passwordpolicy`);
 
         if (error.value) {
             throw new Error(error.value.message);

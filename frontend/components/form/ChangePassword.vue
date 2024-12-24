@@ -2,7 +2,7 @@
 import type { FormError, FormSubmitEvent } from '#ui/types'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
-
+const runtimeConfig = useRuntimeConfig();
 const { t } = useI18n();
 const auth = useAuthStore();
 const formElement = ref();
@@ -49,7 +49,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     try {
         const { data, error } = await useFetch<{ 
             redirectUrl: string 
-        }>(`http://localhost:3002/api/v1/auth/force-change-password${auth.uri}`, {
+        }>(`${runtimeConfig.public.apiBase}/api/v1/auth/force-change-password${auth.uri}`, {
             method: 'POST',
             body: {
                 session: auth.changPassword.session,
@@ -64,7 +64,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
             if (error.value.data.code === 'MissingRequiredFieldsException') {
                 toast.add({ title: t('noti-missing-required-exception'), icon: "i-heroicons-x-circle" });
             } else {
-                toast.add({ title: error.value?.data.message || 'Unknown error occurred', icon: "i-heroicons-x-circle" });
+                toast.add({ title: t('noti-unknown-exception'), icon: "i-heroicons-x-circle" });
             }
             
             return;

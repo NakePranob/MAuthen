@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app'
+import ErrorPage from './components/ErrorPage.vue';
 
 const props = defineProps({
   error: Object as () => NuxtError
@@ -20,10 +21,8 @@ const handleError = () => clearError({ redirect: '/' })
                 <NuxtImg src="/bg.jpg" class="w-full h-full object-cover" alt="Background Image" />
             </div>
             <!-- Right Section: Slot Content -->
-            <div
-                class=" opacity-70 col-span-10 sm:col-span-5 lg:col-span-4 h-screen overflow-y-auto flex flex-col justify-center items-center px-4">
-                <h1 class="text-8xl font-bold text-center">404</h1>
-                <P class="text-xl">Not Found</P>
+            <div class="col-span-10 lg:col-span-4 h-screen overflow-y-auto flex flex-col items-center justify-center px-4">
+                <ErrorPage/>
             </div>
         </div>
     </div>

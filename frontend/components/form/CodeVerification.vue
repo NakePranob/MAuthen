@@ -2,7 +2,7 @@
 import { z } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
 import { useAuthStore } from '@/stores/auth';import { useI18n } from 'vue-i18n'
-
+const runtimeConfig = useRuntimeConfig();
 const { t } = useI18n();
 const auth = useAuthStore();
 const toast = useToast();
@@ -35,7 +35,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     try {
         console.log(event.data)
 
-        const { data, error } = await useFetch(`http://localhost:3002/api/v1/auth/register${auth.uri}`, {
+        const { data, error } = await useFetch(`${runtimeConfig.public.apiBase}/api/v1/auth/register${auth.uri}`, {
             method: 'POST',
             body: {
                 username: auth.codeVerification.email,
@@ -51,7 +51,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             if (error.value?.data.code === "InvalidCodeException") {
                 toast.add({ title: t('noti-invalid-code-exception'), icon: "i-heroicons-x-circle" });
             } else {
-                toast.add({ title: error.value?.data.message || 'Unknown error occurred', icon: "i-heroicons-x-circle" });
+                toast.add({ title: t('noti-unknown-exception'), icon: "i-heroicons-x-circle" });
             }
             return;
         }
@@ -71,6 +71,53 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         toast.add({ title: 'An unexpected error occurred' });
     } finally {
         isLoading.value = false;
+    }
+}
+
+async function resendCode() {
+    if (isLoading.value) return;
+    isLoading.value = true;
+    
+    try {
+        const formData = {
+            username: auth.codeVerification.email,
+            password: auth.codeVerification.password,
+        }
+        const { data, error } = await useFetch<{
+            sessionId: string,
+            message: string,
+        }>(`${runtimeConfig.public.apiBase}/api/v1/auth/register${auth.uri}`, {
+            method: "POST",
+            body: formData,
+        });
+
+        if (error.value) {
+            console.error("Error message from server:", error || "Unknown error occurred");
+            if (error.value?.data.code === "UserAlreadyExistsException") {
+                toast.add({ title: t('noti-user-already-exists-exception'), icon: "i-heroicons-x-circle" });
+            } else if (error.value.data.code === 'MissingRequiredFieldsException') {
+                toast.add({ title: t('noti-missing-required-exception'), icon: "i-heroicons-x-circle" });
+            } else {
+                toast.add({ title: error.value?.data.message || 'Unknown error occurred', icon: "i-heroicons-x-circle" });
+            }
+            return;
+        }
+
+        if (data.value) {
+            auth.setCodeVerification({
+                email: auth.codeVerification.email,
+                password: auth.codeVerification.password,
+                sessionId: data.value.sessionId,
+                code: '',
+            });
+            toast.add({ title: t('noti-resent-code'), color:"green", icon:"i-heroicons-check-circle" });
+        }
+    } catch (err) {
+        console.error("Unexpected error:", err);
+        toast.add({ title: 'An unexpected error occurred' });
+    } finally {
+        isLoading.value = false;
+        resetCountdown();
     }
 }
 
@@ -168,7 +215,7 @@ function stopCountdown() {
                     </b>
                 </template>
                 <template v-else>
-                    <b @click="resetCountdown" class="text-primary-app hover:scale-105 cursor-pointer 
+                    <b @click="resendCode" class="text-primary-app hover:scale-105 cursor-pointer 
                     transition-all duration-150 ease-in-out dark:text-primary-app-400 font-bold">
                         {{ $t('resend-otp') }}
                     </b>

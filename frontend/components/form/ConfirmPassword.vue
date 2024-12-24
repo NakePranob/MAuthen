@@ -6,6 +6,7 @@ const toast = useToast();
 const formElement = ref();
 const email = ref();
 const isLoading = ref(false);
+const runtimeConfig = useRuntimeConfig();
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n();
@@ -64,7 +65,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
 
         const { data, error } = await useFetch<{
             redirectUrl: string;
-        }>(`http://localhost:3002/api/v1/auth/forgot-password${auth.uri}`, {
+        }>(`${runtimeConfig.public.apiBase}/api/v1/auth/forgot-password${auth.uri}`, {
             method: 'POST',
             body: {
                 username: auth.forgotPassword.email,
@@ -79,8 +80,10 @@ async function onSubmit(event: FormSubmitEvent<any>) {
             console.error("Error message from server:", error || "Unknown error occurred");
             if (error.value?.data.code === "InvalidCodeException") {
                 toast.add({ title: t('noti-invalid-code-exception'), icon: "i-heroicons-x-circle" });
+            }  else if (error.value.data.code === "MissingRequiredFieldsException") {
+                toast.add({ title: t('noti-missing-required-exception'), icon: "i-heroicons-x-circle" });
             } else {
-                toast.add({ title: 'An unexpected error occurred', icon: "i-heroicons-x-circle" });
+                toast.add({ title: t('noti-unknown-exception'), icon: "i-heroicons-x-circle" });
             }
             return;
         }
@@ -159,7 +162,7 @@ async function resendCode() {
         const { data, error } = await useFetch<{
             message: string;
             sessionId: string;
-        }>(`http://localhost:3002/api/v1/auth/forgot-password${auth.uri}`, {
+        }>(`${runtimeConfig.public.apiBase}/api/v1/auth/forgot-password${auth.uri}`, {
             method: 'POST',
             body: {
                 username: auth.forgotPassword.email,
@@ -169,7 +172,7 @@ async function resendCode() {
 
         if (error.value) {
             console.error("Error message from server:", error || "Unknown error occurred");
-            toast.add({ title: error.value?.data.message });
+            toast.add({ title: t('noti-unknown-exception'), icon: "i-heroicons-x-circle" });
             return;
         }
 

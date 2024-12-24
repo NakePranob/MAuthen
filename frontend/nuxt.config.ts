@@ -11,24 +11,29 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxtjs/i18n'
   ],
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE,
+    },
+  },
   i18n: {
     strategy: "prefix",
     vueI18n: "~/i18n/i18n.config.ts",
     defaultLocale: "en",
     lazy: true,
     locales: [
-        {
-            code: "en",
-            language: "en-US",
-            file: "en.json",
-        },
-        {
-            code: "th",
-            language: "th-TH",
-            file: "th.json",
-        },
+      {
+        code: "en",
+        language: "en-US",
+        file: "en.json",
+      },
+      {
+        code: "th",
+        language: "th-TH",
+        file: "th.json",
+      },
     ],
-},
+  },
   tailwindcss: {
     config: {
       theme: {

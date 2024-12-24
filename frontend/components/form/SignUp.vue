@@ -2,7 +2,7 @@
 import type { FormError, FormSubmitEvent } from '#ui/types'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
-
+const runtimeConfig = useRuntimeConfig();
 const { t } = useI18n();
 const toast = useToast();
 const auth = useAuthStore();
@@ -74,7 +74,7 @@ async function onSubmit(event: FormSubmitEvent<{
         const { data, error } = await useFetch<{
             sessionId: string,
             message: string,
-        }>(`http://localhost:3002/api/v1/auth/register${auth.uri}`, {
+        }>(`${runtimeConfig.public.apiBase}/api/v1/auth/register${auth.uri}`, {
             method: "POST",
             body: formData,
         });
@@ -86,7 +86,7 @@ async function onSubmit(event: FormSubmitEvent<{
             } else if (error.value.data.code === 'MissingRequiredFieldsException') {
                 toast.add({ title: t('noti-missing-required-exception'), icon: "i-heroicons-x-circle" });
             } else {
-                toast.add({ title: error.value?.data.message || 'Unknown error occurred', icon: "i-heroicons-x-circle" });
+                toast.add({ title: t('noti-unknown-exception'), icon: "i-heroicons-x-circle" });
             }
             return;
         }

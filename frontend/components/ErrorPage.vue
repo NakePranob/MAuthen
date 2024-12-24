@@ -1,7 +1,7 @@
 <template>
-    <div class="w-80 text-center col-span-10 sm:col-span-5 lg:col-span-4 h-screen overflow-y-auto flex flex-col justify-center items-center px-4">
+    <div class="max-w-[420px] w-full flex flex-col items-center justify-center">
         <h1 class="text-8xl font-bold text-center text-primary">{{ code }}</h1>
-        <P class="text-lg mt-4 ">{{ content }}</P>
+        <P class="text-lg mt-4 w-80 text-center">{{ content }}</P>
     </div>
 </template>
 
